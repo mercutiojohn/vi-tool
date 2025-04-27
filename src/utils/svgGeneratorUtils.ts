@@ -14,10 +14,10 @@ function validateSvg(svgText: string): boolean {
  * @returns Promise 包含 {fileName, url} 对象
  */
 export async function generateSubSVG(alignment: string, color: string): Promise<{fileName: string, url: string}> {
-  const svgFile = alignment === 'left' ? 'sub@01.svg' : 'sub@02.svg';
+  const svgFile = alignment === 'left' ? 'sub@03.svg' : 'sub@04.svg';
   
   try {
-    const response = await fetch(`./${svgFile}`);
+    const response = await fetch(`/${svgFile}`);
     let svgText = await response.text();
     
     // 替换颜色属性

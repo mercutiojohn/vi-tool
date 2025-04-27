@@ -61,22 +61,23 @@ export function handleDragOver(
   // 处理内部拖拽重排序
   if (draggingItemId && containerRef.current) {
     const afterElement = getDragAfterElement(e.clientX, items, containerRef);
+    const draggedItemIndex = items.findIndex(item => item.id === draggingItemId);
+    
+    const newItems = [...items];
+    const [draggedItem] = newItems.splice(draggedItemIndex, 1);
     
     if (afterElement) {
-      const draggedItemIndex = items.findIndex(item => item.id === draggingItemId);
+      // 插入到指定元素之前
       const afterElementIndex = items.findIndex(item => item.id === afterElement.id);
-      
-      // 避免不必要的重新排序（如果放回原来的位置）
       if (draggedItemIndex !== afterElementIndex && draggedItemIndex !== afterElementIndex - 1) {
-        const newItems = [...items];
-        const [draggedItem] = newItems.splice(draggedItemIndex, 1);
-        
-        // 确定正确的插入位置
         const insertIndex = afterElementIndex > draggedItemIndex ? afterElementIndex - 1 : afterElementIndex;
         newItems.splice(insertIndex, 0, draggedItem);
-        
         onItemsReorder(newItems);
       }
+    } else {
+      // 如果afterElement为null，表示拖到最后
+      newItems.push(draggedItem);
+      onItemsReorder(newItems);
     }
   }
 }
@@ -157,22 +158,23 @@ export function getDragAfterElement(
   // 获取所有非拖拽中的元素
   const domElements = Array.from(containerRef.current.querySelectorAll('.canvas-item:not(.dragging)'));
   
-  // 初始化结果对象
-  let result = { offset: Number.NEGATIVE_INFINITY, id: null as string | null };
+  if (domElements.length === 0) return null;
   
-  // 找出鼠标位置最近的元素
-  for (const child of domElements) {
+  // 计算每个元素的位置和偏移量
+  const itemsWithOffsets = domElements.map(child => {
     const box = child.getBoundingClientRect();
     const offset = clientX - box.left - box.width / 2;
-    
-    if (offset < 0 && offset > result.offset) {
-      const itemId = child.getAttribute('data-item-id');
-      if (itemId) {
-        result = { offset, id: itemId };
-      }
+    const itemId = child.getAttribute('data-item-id');
+    return { offset, id: itemId };
+  });
+
+  // 找出最近的元素
+  const closestItem = itemsWithOffsets.reduce((closest, current) => {
+    if (current.offset < 0 && current.offset > closest.offset) {
+      return current;
     }
-  }
-  
-  // 返回匹配的项目或null
-  return result.id ? items.find(i => i.id === result.id) || null : null;
+    return closest;
+  }, { offset: Number.NEGATIVE_INFINITY, id: null as string | null });
+
+  return closestItem.id ? items.find(i => i.id === closestItem.id) || null : null;
 }
