@@ -6,7 +6,6 @@ import StepContextMenu from '../ContextMenu';
 import { getDynamicSpacing } from '@/utils/spacingRules';
 import { handleDragOver, handleDrop } from '@/utils/dragUtils';
 import { cn } from '@/lib/utils';
-import { PanelLeft } from 'lucide-react';
 
 interface CanvasProps {
   items?: SvgItem[];
