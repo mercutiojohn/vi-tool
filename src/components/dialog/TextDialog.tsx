@@ -79,22 +79,9 @@ export default function TextDialog({ onClose, onConfirm, mode = 'normal' }: Text
               </div>
             </RadioGroup>
           </div>
-          
-          {/* 在色带模式下显示 */}
-          {/* 普通模式下显示色带开关 */}
-          {mode === 'normal' && (
-            <div className="flex items-center space-x-2">
-              <Switch
-                id="color-band"
-                checked={hasColorBand}
-                onCheckedChange={setHasColorBand}
-              />
-              <Label htmlFor="color-band">添加色带</Label>
-            </div>
-          )}
 
-          {/* 色带模式或启用了色带时显示颜色选择器 */}
-          {(mode === 'colorBand' || hasColorBand) && (
+          {/* 色带模式显示颜色选择器 */}
+          {mode === 'colorBand' && (
             <ColorPicker
               label="色带颜色"
               value={colorBandColor}
