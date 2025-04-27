@@ -14,7 +14,9 @@ export interface CanvasItemProps {
   item: SvgItem;
   isActive: boolean;
   onItemClick: (item: SvgItem, x: number, y: number) => void;
-  className?: string;
+  isDragging?: boolean;
+  onDragStart?: () => void;
+  onDragEnd?: () => void;
 }
 
 export interface ToolbarItemProps {

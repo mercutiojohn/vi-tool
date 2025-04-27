@@ -5,11 +5,23 @@ import { cn } from '@/lib/utils';
 interface Props extends CanvasItemProps {
   className?: string;
   style?: React.CSSProperties;
+  isDragging?: boolean;
+  onDragStart?: () => void;
+  onDragEnd?: () => void;
 }
 
 const CANVAS_HEIGHT = 150;
 
-export default function CanvasItem({ item, isActive, onItemClick, className, style }: Props) {
+export default function CanvasItem({ 
+  item, 
+  isActive, 
+  isDragging,
+  onItemClick, 
+  onDragStart,
+  onDragEnd,
+  className, 
+  style 
+}: Props) {
   const [imgSize, setImgSize] = useState({ width: 0, height: CANVAS_HEIGHT });
   const imgRef = useRef<HTMLImageElement>(null);
   
@@ -48,18 +60,42 @@ export default function CanvasItem({ item, isActive, onItemClick, className, sty
     e.stopPropagation();
     onItemClick(item, e.clientX, e.clientY);
   };
+
+  const handleDragStart = (e: React.DragEvent) => {
+    e.dataTransfer.setData('text/plain', item.id);
+    if (onDragStart) {
+      onDragStart();
+    }
+    // 使用setTimeout解决Safari中拖拽图像立即消失的问题
+    setTimeout(() => {
+      if (isDragging) {
+        e.currentTarget.classList.add('opacity-50');
+      }
+    }, 0);
+  };
+
+  const handleDragEnd = (e: React.DragEvent) => {
+    e.currentTarget.classList.remove('opacity-50');
+    if (onDragEnd) {
+      onDragEnd();
+    }
+  };
   
   return (
     <div 
       className={cn(
         "h-[150px] cursor-move transition-transform flex items-center flex-shrink-0",
         isActive && "outline outline-4 outline-[#00a0e9] outline-offset-[-5px] rounded-md opacity-85",
+        isDragging && "dragging opacity-50",
         "hover:scale-105",
         className
       )}
       style={style}
       onClick={handleClick}
       draggable={true}
+      onDragStart={handleDragStart}
+      onDragEnd={handleDragEnd}
+      data-item-id={item.id}
     >
       <img
         ref={imgRef}
