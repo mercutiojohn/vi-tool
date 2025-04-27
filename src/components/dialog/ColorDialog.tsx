@@ -7,8 +7,7 @@ import {
   DialogFooter 
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
-import { colorPalette } from '@/data/colorPalette';
+import { ColorPicker } from '@/components/ui/color-picker';
 
 interface ColorDialogProps {
   onClose: () => void;
@@ -31,22 +30,11 @@ export default function ColorDialog({ onClose, onConfirm, originFile }: ColorDia
         </DialogHeader>
         
         <div className="grid gap-4 py-4">
-          <Label>选择颜色</Label>
-          <div className="flex flex-wrap gap-2">
-            {colorPalette.map((color) => (
-              <div
-                key={color.value}
-                className="w-10 h-10 rounded cursor-pointer transition-all"
-                style={{ 
-                  backgroundColor: color.value,
-                  border: selectedColor === color.value ? '2px solid white' : 'none',
-                  boxShadow: selectedColor === color.value ? '0 0 0 1px rgba(0,0,0,0.3)' : 'none'
-                }}
-                onClick={() => setSelectedColor(color.value)}
-                title={color.name}
-              />
-            ))}
-          </div>
+          <ColorPicker
+            label="选择颜色"
+            value={selectedColor}
+            onChange={setSelectedColor}
+          />
         </div>
         
         <DialogFooter>

@@ -13,6 +13,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { colorPalette } from '@/data/colorPalette';
+import { ColorPicker } from '@/components/ui/color-picker';
 
 interface TextDialogProps {
   onClose: () => void;
@@ -81,26 +82,13 @@ export default function TextDialog({ onClose, onConfirm, mode = 'normal' }: Text
             </RadioGroup>
           </div>
           
-          {/* 在色带模式下总是显示，或者在普通模式下根据开关状态显示 */}
+          {/* 在色带模式下显示 */}
           {(mode === 'colorBand') && (
-            <div className="grid gap-2">
-              <Label>色带颜色</Label>
-              <div className="flex flex-wrap gap-2">
-                {colorPalette.map((color) => (
-                  <div
-                    key={color.value}
-                    className="w-10 h-10 rounded cursor-pointer transition-all"
-                    style={{ 
-                      backgroundColor: color.value,
-                      border: colorBandColor === color.value ? '2px solid white' : 'none',
-                      boxShadow: colorBandColor === color.value ? '0 0 0 1px rgba(0,0,0,0.3)' : 'none'
-                    }}
-                    onClick={() => setColorBandColor(color.value)}
-                    title={color.name}
-                  />
-                ))}
-              </div>
-            </div>
+            <ColorPicker
+              label="色带颜色"
+              value={colorBandColor}
+              onChange={setColorBandColor}
+            />
           )}
         </div>
         
