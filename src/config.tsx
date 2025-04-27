@@ -1,4 +1,4 @@
-import { Home, Settings } from "lucide-react"
+import { Home, Settings, Download } from "lucide-react"
 
 import {
   createBrowserRouter
@@ -9,7 +9,44 @@ import App from "./App";
 
 export const GITHUB_URL = "https://github.com/mercutiojohn/vi-tool";
 
+export const APP_NAME = "导向标志生成器";
+
 export const APP_VERSION  = `v0.85`;
+
+// 备案信息配置
+export const BEIAN_CONFIG = {
+  icp: {
+    text: "京ICP备2023014659号",
+    url: "https://beian.miit.gov.cn/"
+  },
+  police: {
+    text: "京公网安备11010802042299号",
+    url: "https://beian.mps.gov.cn/#/query/webSearch?code=11010802042299",
+    iconPath: "/beian.png"
+  },
+  copyright: "Images Copyright © 2025 Central Go; App Copyright © 2025 Ryan.G",
+};
+
+// 使用帮助内容 - Markdown格式
+export const HELP_CONTENT = `
+1. 从左侧工具栏选择图标添加到画板，拖拽即可排序，点击图标打开菜单。
+2. 目前该工具仍为测试版本，部分功能尚未实现，仅供参考体验。
+3. 首次打开时，需要5-10秒进行加载，请耐心等待。
+4. 工具内容与官方运营单位无关，仅供参考。
+`;
+
+// 更新日志 - Markdown格式
+export const UPDATE_LOG = `
+## 版本${APP_VERSION}
+
+更新日期: ${new Date().toLocaleDateString()}
+
+- 加入导出SVG功能
+- 优化工具栏SVG代码格式
+- 增加分支出口排版方式
+- 增加更多素材
+- 全新侧边栏界面设计
+`;
 
 export const ROUTER_ITEMS = createBrowserRouter([
   {
@@ -26,7 +63,6 @@ export const ROUTER_ITEMS = createBrowserRouter([
       }
     ],
   },
-
 ]);
 
 export const MENU_ITEMS = [

@@ -3,6 +3,8 @@
 
 @config "../tailwind.config.js";
 
+@plugin "@tailwindcss/typography";
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {

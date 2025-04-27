@@ -38,7 +38,9 @@ import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
-import { APP_VERSION, GITHUB_URL } from './config';
+import { APP_VERSION, GITHUB_URL, BEIAN_CONFIG, HELP_CONTENT, UPDATE_LOG, APP_NAME } from './config';
+// import { MDXProvider } from '@mdx-js/react';
+import ReactMarkdown from 'react-markdown';
 
 export default function App() {
   const [fontBuffer, setFontBuffer] = useState<ArrayBuffer | null>(null);
@@ -139,7 +141,7 @@ export default function App() {
             <Menu className="h-5 w-5" />
           </Button>
           <h1 className="text-xl font-bold text-foreground flex items-center gap-2">
-            NaL 导向标志生成器
+            {APP_NAME}
             <Badge variant="secondary" className="ml-1 font-normal">Beta</Badge>
           </h1>
         </div>
@@ -246,16 +248,18 @@ export default function App() {
       {/* 底部状态栏 */}
       <footer className="border-t py-2 px-4 bg-muted/30 text-xs text-muted-foreground flex items-center justify-between">
         <div className="flex items-center">
-          <span className="mr-2">Copyright © 2025 Central Go</span>
+          <span className="mr-2">{BEIAN_CONFIG.copyright}</span>
           <Separator orientation="vertical" className="h-3 mx-2" />
-          <a href="https://beian.miit.gov.cn/" className="hover:text-foreground transition-colors">京ICP备2023014659号</a>
+          <a href={BEIAN_CONFIG.icp.url} className="hover:text-foreground transition-colors">
+            {BEIAN_CONFIG.icp.text}
+          </a>
           <Separator orientation="vertical" className="h-3 mx-2" />
-          <a href="https://beian.mps.gov.cn/#/query/webSearch?code=11010802042299" 
+          <a href={BEIAN_CONFIG.police.url} 
              rel="noreferrer noopener" 
              target="_blank"
              className="hover:text-foreground transition-colors flex items-center">
-            <img src="/beian.png" alt="备案" className="h-[14px] mr-1" />
-            京公网安备11010802042299号
+            <img src={BEIAN_CONFIG.police.iconPath} alt="备案" className="h-[14px] mr-1" />
+            {BEIAN_CONFIG.police.text}
           </a>
         </div>
         
@@ -277,38 +281,17 @@ export default function App() {
         <AlertDialogContent className="max-w-md">
           <AlertDialogHeader>
             <AlertDialogTitle className="text-xl">使用帮助</AlertDialogTitle>
-            <AlertDialogDescription className="space-y-2 text-foreground/80">
-              <p className="flex items-start">
-                <span className="mr-2">1.</span> 
-                <span>从左侧工具栏选择图标添加到画板，拖拽即可排序，点击图标打开菜单。</span>
-              </p>
-              <p className="flex items-start">
-                <span className="mr-2">2.</span> 
-                <span>目前该工具仍为测试版本，部分功能尚未实现，仅供参考体验。</span>
-              </p>
-              <p className="flex items-start">
-                <span className="mr-2">3.</span> 
-                <span>首次打开时，需要5-10秒进行加载，请耐心等待。</span>
-              </p>
-              <p className="flex items-start">
-                <span className="mr-2">4.</span> 
-                <span>工具内容与官方运营单位无关，仅供参考。</span>
-              </p>
-              {/* <div className="mt-4 pt-4 border-t border-border">
-                <p className="font-bold mb-2 text-primary flex items-center">
-                  <span className="bg-primary/10 rounded-full p-1 mr-2">
-                    <Download className="h-4 w-4 text-primary" />
-                  </span>
-                  版本0.85
-                </p>
-                <ul className="space-y-1 pl-6 list-disc">
-                  <li>加入导出SVG功能</li>
-                  <li>优化工具栏SVG代码格式</li>
-                  <li>增加分支出口排版方式</li>
-                  <li>增加更多素材</li>
-                  <li>全新侧边栏界面设计</li>
-                </ul>
-              </div> */}
+            <AlertDialogDescription>
+              <div className="prose prose-sm dark:prose-invert prose-headings:mb-2 prose-p:my-1 prose-ul:my-1 prose-li:my-0 max-w-none">
+                <ReactMarkdown>
+                  {HELP_CONTENT}
+                </ReactMarkdown>
+              </div>
+              <div className="prose prose-sm dark:prose-invert prose-headings:text-primary prose-headings:flex prose-headings:items-center max-w-none mt-4 pt-4 border-t border-border">
+                <ReactMarkdown>
+                  {UPDATE_LOG}
+                </ReactMarkdown>
+              </div>
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
