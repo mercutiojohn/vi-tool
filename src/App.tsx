@@ -95,7 +95,7 @@ export default function App() {
     }
     
     if (canvasItems.length === 0) {
-      alert('画板中没有可导出的图标');
+      alert('画板中没有可导出的导向标志');
       return;
     }
     
@@ -110,7 +110,7 @@ export default function App() {
     }
     
     if (canvasItems.length === 0) {
-      alert('画板中没有可导出的图标');
+      alert('画板中没有可导出的导向标志');
       return;
     }
     
@@ -231,7 +231,7 @@ export default function App() {
             </div>
             
             <div className="text-xs text-muted-foreground">
-              最后更新：{new Date().toLocaleDateString('zh-CN')}
+              {/* 最后更新：{new Date().toLocaleDateString('zh-CN')} */}
             </div>
           </div>
           
@@ -273,7 +273,7 @@ export default function App() {
         <div className="flex items-center">
           <span className="mr-2">{BEIAN_CONFIG.copyright}</span>
           <Separator orientation="vertical" className="h-3 mx-2" />
-          <a href={BEIAN_CONFIG.icp.url} className="hover:text-foreground transition-colors">
+          {/* <a href={BEIAN_CONFIG.icp.url} className="hover:text-foreground transition-colors">
             {BEIAN_CONFIG.icp.text}
           </a>
           <Separator orientation="vertical" className="h-3 mx-2" />
@@ -283,7 +283,7 @@ export default function App() {
              className="hover:text-foreground transition-colors flex items-center">
             <img src={BEIAN_CONFIG.police.iconPath} alt="备案" className="h-[14px] mr-1" />
             {BEIAN_CONFIG.police.text}
-          </a>
+          </a> */}
         </div>
         
         <div className="flex items-center gap-2">

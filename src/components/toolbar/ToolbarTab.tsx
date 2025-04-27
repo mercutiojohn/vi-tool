@@ -1,7 +1,6 @@
 import { SvgTypes } from '@/types';
 import { cn } from '@/lib/utils';
 
-// 导入图标映射
 import { 
   LineChart, 
   Type, 

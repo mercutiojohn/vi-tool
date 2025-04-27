@@ -47,7 +47,7 @@ export function getSubSeriesSpacing(currentFile: string, nextFile: string): numb
     return 15;
   }
   
-  // 默认子线路图标间距为0
+  // 默认子线路导向标志间距为0
   return 0;
 }
 

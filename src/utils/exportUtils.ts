@@ -7,7 +7,7 @@ const DEFAULT_SPACING = 25;
 
 export async function exportAsJPG(items: SvgItem[]) {
   if (items.length === 0) {
-    alert('画板中没有可导出的图标');
+    alert('画板中没有可导出的导向标志');
     return;
   }
 
@@ -91,7 +91,7 @@ export async function exportAsJPG(items: SvgItem[]) {
 
 export async function exportAsSVG(items: SvgItem[], fontBuffer: ArrayBuffer) {
   if (items.length === 0) {
-    alert('画板中没有可导出的图标');
+    alert('画板中没有可导出的导向标志');
     return;
   }
 

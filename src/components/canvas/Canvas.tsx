@@ -230,7 +230,7 @@ const Canvas = forwardRef<CanvasRef, CanvasProps>(({
   return (
     <div className="w-full mx-auto">
       <div className="bg-muted/50 p-2 rounded-lg mb-4 text-sm text-muted-foreground">
-        设计区域 - 将图标添加到此处，拖拽调整顺序
+        将导向标志添加到此处，拖拽调整顺序
       </div>
       
       <div 
@@ -248,7 +248,7 @@ const Canvas = forwardRef<CanvasRef, CanvasProps>(({
           style={{ flexShrink: 0 }}
         >
           {items.length === 0 ? (
-            <div className="text-white/50 text-sm w-full text-center">拖拽或点击图标添加到此区域</div>
+            <div className="text-white/50 text-sm w-full text-center">拖拽或点击导向标志添加到此区域</div>
           ) : (
             items.map((item, index) => (
               <StepContextMenu
