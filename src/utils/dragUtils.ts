@@ -50,7 +50,7 @@ export function handleDragOver(
   e: React.DragEvent,
   draggingItemId: string | null,
   items: SvgItem[],
-  containerRef: React.RefObject<HTMLElement>,
+  containerRef: React.RefObject<HTMLDivElement>,
   onItemsReorder: (newItems: SvgItem[]) => void
 ): void {
   e.preventDefault();
@@ -93,7 +93,7 @@ export function handleDragOver(
 export function handleDrop(
   e: React.DragEvent,
   items: SvgItem[],
-  containerRef: React.RefObject<HTMLElement>,
+  containerRef: React.RefObject<HTMLDivElement>,
   onAddItem: (file: string) => void,
   onItemsReorder: (newItems: SvgItem[]) => void
 ): void {
@@ -153,7 +153,7 @@ export function handleDrop(
 export function getDragAfterElement(
   clientX: number,
   items: SvgItem[],
-  containerRef: React.RefObject<HTMLElement>
+  containerRef: React.RefObject<HTMLDivElement>
 ): SvgItem | null {
   if (!containerRef.current) return null;
   

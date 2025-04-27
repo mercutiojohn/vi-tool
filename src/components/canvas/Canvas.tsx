@@ -128,37 +128,46 @@ export default function Canvas({ items: externalItems, onItemsChange, onAddItem 
       
       <div 
         ref={canvasRef}
-        className={`h-[${CANVAS_HEIGHT}px] bg-[#001D31] rounded-lg flex items-center transition-all px-[25px] border-2 border-dashed border-border/50 ${items.length === 0 ? 'justify-center min-w-[200px]' : ''}`}
-        onDragOver={(e) => handleDragOver(e, draggingItem, items, canvasRef, updateItems)}
-        onDrop={(e) => handleDrop(e, items, canvasRef, handleAddItem, updateItems)}
+        className={`h-[${CANVAS_HEIGHT}px] bg-[#001D31] rounded-lg transition-all px-[25px] border-2 border-dashed border-border/50 overflow-x-auto overflow-y-hidden ${items.length === 0 ? 'min-w-[200px]' : ''}`}
+        style={{ 
+          scrollbarWidth: 'thin',
+          scrollbarColor: 'rgba(255,255,255,0.3) transparent'
+        }}
+        onDragOver={(e) => handleDragOver(e, draggingItem, items, canvasRef as React.RefObject<HTMLDivElement>, updateItems)}
+        onDrop={(e) => handleDrop(e, items, canvasRef as React.RefObject<HTMLDivElement>, handleAddItem, updateItems)}
       >
-        {items.length === 0 ? (
-          <div className="text-white/50 text-sm">拖拽或点击图标添加到此区域</div>
-        ) : (
-          items.map((item, index) => (
-            <StepContextMenu
-              key={item.id}
-              onMoveLeft={() => moveItem(item.id, 'left')}
-              onMoveRight={() => moveItem(item.id, 'right')}
-              onDuplicate={() => duplicateItem(item.id)}
-              onRemove={() => removeItem(item.id)}
-              canMoveLeft={index > 0}
-              canMoveRight={index < items.length - 1}
-              onItemClick={() => setActiveItem(item.id === activeItem?.id ? null : item)}
-            >
-              <CanvasItem
-                item={item}
-                isActive={activeItem?.id === item.id}
-                isDragging={draggingItem === item.id}
-                onDragStart={() => handleDragStart(item.id)}
-                onDragEnd={handleDragEnd}
-                className="canvas-item"
-                style={getSpacingStyle(index)}
+        <div 
+          className="inline-flex items-center h-full min-w-max"
+          style={{ flexShrink: 0 }}
+        >
+          {items.length === 0 ? (
+            <div className="text-white/50 text-sm w-full text-center">拖拽或点击图标添加到此区域</div>
+          ) : (
+            items.map((item, index) => (
+              <StepContextMenu
+                key={item.id}
+                onMoveLeft={() => moveItem(item.id, 'left')}
+                onMoveRight={() => moveItem(item.id, 'right')}
+                onDuplicate={() => duplicateItem(item.id)}
+                onRemove={() => removeItem(item.id)}
+                canMoveLeft={index > 0}
+                canMoveRight={index < items.length - 1}
                 onItemClick={() => setActiveItem(item.id === activeItem?.id ? null : item)}
-              />
-            </StepContextMenu>
-          ))
-        )}
+              >
+                <CanvasItem
+                  item={item}
+                  isActive={activeItem?.id === item.id}
+                  isDragging={draggingItem === item.id}
+                  onDragStart={() => handleDragStart(item.id)}
+                  onDragEnd={handleDragEnd}
+                  className="canvas-item"
+                  style={getSpacingStyle(index)}
+                  onItemClick={() => setActiveItem(item.id === activeItem?.id ? null : item)}
+                />
+              </StepContextMenu>
+            ))
+          )}
+        </div>
       </div>
     </div>
   );
