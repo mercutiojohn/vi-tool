@@ -3,6 +3,7 @@ import { SvgItem } from '@/types';
 import CanvasItem from './CanvasItem';
 import ContextMenu from '../ContextMenu';
 import { getDynamicSpacing } from '@/utils/spacingRules';
+import { handleDragOver } from '@/utils/dragUtils';
 
 interface CanvasProps {
   items?: SvgItem[];
@@ -146,73 +147,13 @@ export default function Canvas({ items: externalItems, onItemsChange }: CanvasPr
   const handleDragEnd = () => {
     setDraggingItem(null);
   };
-
-  // 处理拖拽悬停
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-    if (!draggingItem || !canvasRef.current) return;
-
-    const afterElement = getDragAfterElement(e.clientX);
-    
-    if (afterElement) {
-      const draggedItemIndex = items.findIndex(item => item.id === draggingItem);
-      const afterElementIndex = items.findIndex(item => item.id === afterElement.id);
-      
-      // 避免不必要的重新排序（如果放回原来的位置）
-      if (draggedItemIndex !== afterElementIndex && draggedItemIndex !== afterElementIndex - 1) {
-        const newItems = [...items];
-        const [draggedItem] = newItems.splice(draggedItemIndex, 1);
-        
-        // 确定正确的插入位置
-        const insertIndex = afterElementIndex > draggedItemIndex ? afterElementIndex - 1 : afterElementIndex;
-        newItems.splice(insertIndex, 0, draggedItem);
-        
-        updateItems(newItems);
-      }
-    }
-  };
-
-  // 获取拖拽目标后的元素
-  const getDragAfterElement = (x: number): SvgItem | null => {
-    if (!canvasRef.current) return null;
-    
-    // 获取所有非拖拽中的元素
-    const domElements = Array.from(canvasRef.current.querySelectorAll('.canvas-item:not(.dragging)'));
-    
-    // 找出鼠标位置最近的元素
-    return domElements.reduce((closest, child) => {
-      const box = child.getBoundingClientRect();
-      const offset = x - box.left - box.width / 2;
-      
-      if (offset < 0 && offset > closest.offset) {
-        const itemId = child.getAttribute('data-item-id');
-        const item = items.find(i => i.id === itemId);
-        return item ? { offset, id: item.id } : closest;
-      } else {
-        return closest;
-      }
-    }, { offset: Number.NEGATIVE_INFINITY, id: null }).id 
-      ? items.find(i => i.id === (domElements.reduce((closest, child) => {
-        const box = child.getBoundingClientRect();
-        const offset = x - box.left - box.width / 2;
-        
-        if (offset < 0 && offset > closest.offset) {
-          const itemId = child.getAttribute('data-item-id');
-          const item = items.find(i => i.id === itemId);
-          return item ? { offset, id: item.id } : closest;
-        } else {
-          return closest;
-        }
-      }, { offset: Number.NEGATIVE_INFINITY, id: null }).id))
-      : null;
-  };
   
   return (
     <div className="w-full max-w-6xl mx-auto overflow-x-auto">
       <div 
         ref={canvasRef}
         className={`h-[${CANVAS_HEIGHT}px] bg-[#001D31] rounded-lg flex items-center transition-all px-[25px] ${items.length === 0 ? 'w-[50px] p-0' : ''}`}
-        onDragOver={handleDragOver}
+        onDragOver={(e) => handleDragOver(e, draggingItem, items, canvasRef, updateItems)}
       >
         {items.length === 0 ? (
           <div className="text-white opacity-50">拖拽图标添加</div>

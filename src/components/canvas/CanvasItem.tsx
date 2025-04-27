@@ -1,6 +1,7 @@
 import { useRef, useEffect, useState, useCallback } from 'react';
 import { CanvasItemProps } from '@/types';
 import { cn } from '@/lib/utils';
+import { handleDragStart, handleDragEnd } from '@/utils/dragUtils';
 
 interface Props extends CanvasItemProps {
   className?: string;
@@ -60,26 +61,6 @@ export default function CanvasItem({
     e.stopPropagation();
     onItemClick(item, e.clientX, e.clientY);
   };
-
-  const handleDragStart = (e: React.DragEvent) => {
-    e.dataTransfer.setData('text/plain', item.id);
-    if (onDragStart) {
-      onDragStart();
-    }
-    // 使用setTimeout解决Safari中拖拽图像立即消失的问题
-    setTimeout(() => {
-      if (isDragging) {
-        e.currentTarget.classList.add('opacity-50');
-      }
-    }, 0);
-  };
-
-  const handleDragEnd = (e: React.DragEvent) => {
-    e.currentTarget.classList.remove('opacity-50');
-    if (onDragEnd) {
-      onDragEnd();
-    }
-  };
   
   return (
     <div 
@@ -93,8 +74,8 @@ export default function CanvasItem({
       style={style}
       onClick={handleClick}
       draggable={true}
-      onDragStart={handleDragStart}
-      onDragEnd={handleDragEnd}
+      onDragStart={(e) => handleDragStart(e, item.id, onDragStart)}
+      onDragEnd={(e) => handleDragEnd(e, onDragEnd)}
       data-item-id={item.id}
     >
       <img
