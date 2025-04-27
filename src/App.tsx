@@ -44,7 +44,8 @@ import {
   UPDATE_LOG, 
   APP_NAME,
   LICENSE_CONTENT,
-  CONTRIBUTION_CONTENT 
+  CONTRIBUTION_CONTENT, 
+  PERSONAL_URL
 } from './config';
 // import { MDXProvider } from '@mdx-js/react';
 import ReactMarkdown from 'react-markdown';
@@ -171,6 +172,17 @@ export default function App() {
           >
             <a href={CENTRAL_GO_URL} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1">
               Central Go
+              <ArrowUpRight className="h-4 w-4" />
+            </a>
+          </Button>
+
+          <Button 
+            variant="outline" 
+            size="sm" 
+            asChild
+          >
+            <a href={PERSONAL_URL} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1">
+              Ryan.G
               <ArrowUpRight className="h-4 w-4" />
             </a>
           </Button>
