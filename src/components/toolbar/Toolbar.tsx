@@ -15,6 +15,7 @@ import {
   generateTextSVG, 
   generateTextSubSVG 
 } from '@/utils/svgGeneratorUtils';
+import { PlusCircle } from 'lucide-react';
 
 interface ToolbarProps {
   onAddItem: (file: string, customUrl?: string) => void;
@@ -54,10 +55,11 @@ export default function Toolbar({ onAddItem }: ToolbarProps) {
       return (
         <Button 
           variant="default" 
-          className="bg-[#004080] hover:bg-[#0059b3] min-w-[120px]"
+          className="bg-primary hover:bg-primary/80 min-w-[120px]"
           onClick={() => setShowTextDialog(true)}
         >
-          + 添加文本框
+          <PlusCircle className="mr-2 h-4 w-4" />
+          添加文本框
         </Button>
       );
     } 
@@ -113,8 +115,8 @@ export default function Toolbar({ onAddItem }: ToolbarProps) {
   };
   
   return (
-    <div className="bg-[#001D31] -mt-20">
-      <div className="flex bg-[#003366] px-4 py-2 overflow-x-auto">
+    <div className="bg-secondary -mt-20">
+      <div className="flex bg-primary px-4 py-2 overflow-x-auto">
         {Object.keys(groupedSvgs).map(type => (
           <ToolbarTab
             key={type}
@@ -134,33 +136,25 @@ export default function Toolbar({ onAddItem }: ToolbarProps) {
         <TextDialog 
           onClose={() => setShowTextDialog(false)}
           onConfirm={async (cnText, enText, alignment) => {
-            console.log('TextDialog 开始处理:', { cnText, enText, alignment, activeTab });
             if (!fontBuffer) {
-              console.warn('TextDialog 字体未加载完成');
               alert('字体尚未加载完成，请稍后再试');
               setShowTextDialog(false);
               return;
             }
             
             try {
-              console.log('TextDialog 字体已加载, 准备生成SVG');
               // 根据当前标签页决定生成普通文本还是带色带的文本
               if (activeTab === 'sub') {
-                console.log('TextDialog 正在生成带色带的文本');
                 // 生成带色带的文本
                 const result = await generateTextSubSVG(cnText, enText, alignment, '#001D31', fontBuffer);
-                console.log('TextDialog 生成带色带文本成功:', result);
                 onAddItem(result.fileName, result.url);
               } else {
-                console.log('TextDialog 正在生成普通文本');
                 // 生成普通文本
                 const result = await generateTextSVG(cnText, enText, alignment, fontBuffer);
-                console.log('TextDialog 生成普通文本成功:', result);
                 onAddItem(result.fileName, result.url);
               }
-              console.log('TextDialog 添加项目成功');
             } catch (error) {
-              console.error('TextDialog 生成文本失败:', error);
+              console.error('生成文本失败:', error);
               alert('生成文本失败，请稍后再试');
             }
             
@@ -173,15 +167,12 @@ export default function Toolbar({ onAddItem }: ToolbarProps) {
         <SubDialog
           onClose={() => setShowSubDialog(false)}
           onConfirm={async (alignment, color) => {
-            console.log('SubDialog 开始处理:', { alignment, color });
             try {
               // 生成色带SVG
               const result = await generateSubSVG(alignment, color);
-              console.log('SubDialog 生成SVG成功:', result);
               onAddItem(result.fileName, result.url);
-              console.log('SubDialog 添加项目成功');
             } catch (error) {
-              console.error('SubDialog 生成失败:', error);
+              console.error('生成失败:', error);
               alert('生成色带失败，请稍后再试');
             }
             
@@ -194,15 +185,12 @@ export default function Toolbar({ onAddItem }: ToolbarProps) {
         <ColorDialog
           onClose={() => setShowColorDialog(false)}
           onConfirm={async (color) => {
-            console.log('ColorDialog 开始处理:', { color, currentColorFile });
             try {
               // 生成着色SVG
               const result = await generateColoredSVG(currentColorFile, color);
-              console.log('ColorDialog 生成SVG成功:', result);
               onAddItem(result.fileName, result.url);
-              console.log('ColorDialog 添加项目成功');
             } catch (error) {
-              console.error('ColorDialog 处理失败:', error);
+              console.error('处理失败:', error);
               alert('文件加载失败，请检查网络连接');
             }
             

@@ -53,7 +53,7 @@
   --popover-foreground: oklch(0.145 0 0);
   --primary: oklch(0.32 0.093 258.61);
   --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
+  --secondary: oklch(0.22 0.0461 248.44);
   --secondary-foreground: oklch(0.205 0 0);
   --muted: oklch(0.97 0 0);
   --muted-foreground: oklch(0.556 0 0);
@@ -119,4 +119,31 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* 工具栏特定样式 */
+.toolbar-item {
+  @apply transition-all duration-200 hover:scale-105 active:scale-95 shadow-sm;
+}
+
+/* 拖拽相关样式 */
+.dragging-over {
+  @apply ring-2 ring-primary bg-primary/5;
+}
+
+/* 列表项动画 */
+.list-item-enter {
+  @apply opacity-0 -translate-y-2;
+}
+
+.list-item-enter-active {
+  @apply opacity-100 translate-y-0 transition-all duration-300;
+}
+
+.list-item-exit {
+  @apply opacity-100;
+}
+
+.list-item-exit-active {
+  @apply opacity-0 scale-95 transition-all duration-200;
 }

@@ -12,8 +12,10 @@ export default function ToolbarTab({ type, isActive, onClick, label }: ToolbarTa
   return (
     <div
       className={cn(
-        "px-4 py-2 cursor-pointer text-white rounded-md mr-2 whitespace-nowrap transition-colors",
-        isActive ? "bg-[#001D31] font-bold" : "hover:bg-[#004080]"
+        "px-4 py-2 cursor-pointer text-primary-foreground rounded-md mr-2 whitespace-nowrap transition-colors",
+        isActive 
+          ? "bg-primary font-bold shadow-sm" 
+          : "hover:bg-primary/70 hover:shadow-sm"
       )}
       onClick={onClick}
       data-type={type}
