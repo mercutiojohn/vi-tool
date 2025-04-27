@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { SvgItem } from '@/types';
 import CanvasItem from './CanvasItem';
 import ContextMenu from '../ContextMenu';
-import { isSubLinePair, isDotPair, shouldReduceSpacing } from '@/utils/spacingRules';
+import { getDynamicSpacing } from '@/utils/spacingRules';
 
 interface CanvasProps {
   items?: SvgItem[];
@@ -103,26 +103,22 @@ export default function Canvas({ items: externalItems, onItemsChange }: CanvasPr
     hideContextMenu();
   };
   
-  // 应用间距规则
-  const getSpacingClass = (index: number): string => {
-    if (index >= items.length - 1) return '';
+  // 使用getDynamicSpacing获取元素间距
+  const getItemSpacing = (index: number): number => {
+    if (index >= items.length - 1) return 0;
     
     const current = items[index];
     const next = items[index + 1];
     const currentType = current.file.split('@')[0];
     const nextType = next.file.split('@')[0];
     
-    if (shouldReduceSpacing(current.file, next.file)) {
-      return 'mr-[5px]';
-    } else if (isDotPair(current.file, next.file)) {
-      return 'mr-0';
-    } else if (isSubLinePair(currentType, nextType)) {
-      return 'mr-0';
-    } else if (current.file === 'oth@Dot.svg' || next.file === 'oth@Dot.svg') {
-      return 'mr-[15px]';
-    }
-    
-    return `mr-[${DEFAULT_SPACING}px]`;
+    return getDynamicSpacing(current.file, next.file, currentType, nextType, DEFAULT_SPACING);
+  };
+  
+  // 将spacing转换为合适的CSS类名或样式
+  const getSpacingStyle = (index: number): { marginRight: string } => {
+    const spacing = getItemSpacing(index);
+    return { marginRight: `${spacing}px` };
   };
   
   // 点击事件监听
@@ -154,7 +150,8 @@ export default function Canvas({ items: externalItems, onItemsChange }: CanvasPr
               item={item}
               isActive={activeItem?.id === item.id}
               onItemClick={handleItemClick}
-              className={getSpacingClass(index)}
+              className=""
+              style={getSpacingStyle(index)}
             />
           ))
         )}

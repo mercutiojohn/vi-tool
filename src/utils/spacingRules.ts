@@ -18,12 +18,12 @@ export function isSubLinePair(currentType: string, nextType: string): boolean {
          (currentType === 'line' && nextType === 'sub');
 }
 
-// 新增：检查是否是子线路系列文件
+// 检查是否是子线路系列文件
 export function isSubSeries(file: string): boolean {
   return /sub@(0[3-9]|1[0-9]|20|text|long|exit|space)\.svg/.test(file);
 }
 
-// 新增：更精确的检查两个子线路图标的间距规则
+// 获取子线路系列之间的间距
 export function getSubSeriesSpacing(currentFile: string, nextFile: string): number {
   const isExitCurrent = currentFile === 'sub@exit.svg';
   const isExitNext = nextFile === 'sub@exit.svg';
@@ -49,4 +49,19 @@ export function getSubSeriesSpacing(currentFile: string, nextFile: string): numb
   
   // 默认子线路图标间距为0
   return 0;
+}
+
+// 动态计算两个元素之间的间距
+export function getDynamicSpacing(currentFile: string, nextFile: string, currentType: string, nextType: string, defaultSpacing: number = 25): number {
+  if (shouldReduceSpacing(currentFile, nextFile)) return 5;
+  if (isDotPair(currentFile, nextFile)) return 0;
+  if (isSubLinePair(currentType, nextType)) return 0;
+  if (currentFile === 'oth@Dot.svg' || nextFile === 'oth@Dot.svg') return 15;
+  
+  // 检查子线路系列的特殊间距
+  if (isSubSeries(currentFile) && isSubSeries(nextFile)) {
+    return getSubSeriesSpacing(currentFile, nextFile);
+  }
+  
+  return defaultSpacing;
 }

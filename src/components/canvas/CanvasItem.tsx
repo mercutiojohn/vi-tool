@@ -4,11 +4,12 @@ import { cn } from '@/lib/utils';
 
 interface Props extends CanvasItemProps {
   className?: string;
+  style?: React.CSSProperties;
 }
 
 const CANVAS_HEIGHT = 150;
 
-export default function CanvasItem({ item, isActive, onItemClick, className }: Props) {
+export default function CanvasItem({ item, isActive, onItemClick, className, style }: Props) {
   const [imgSize, setImgSize] = useState({ width: 0, height: CANVAS_HEIGHT });
   const imgRef = useRef<HTMLImageElement>(null);
   
@@ -56,6 +57,7 @@ export default function CanvasItem({ item, isActive, onItemClick, className }: P
         "hover:scale-105",
         className
       )}
+      style={style}
       onClick={handleClick}
       draggable={true}
     >
