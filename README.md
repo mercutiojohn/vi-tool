@@ -24,26 +24,19 @@
 
 ## 🚀 本地开发
 
-1. 克隆项目
-
-```bash
-git clone <repository-url>
-cd vi-tool
-```
-
-2. 安装依赖
+1. 安装依赖
 
 ```bash
 pnpm install
 ```
 
-3. 启动开发服务器
+2. 启动开发服务器
 
 ```bash
 pnpm dev
 ```
 
-4. 构建项目
+3. 构建项目
 
 ```bash
 pnpm build
@@ -72,13 +65,15 @@ src/
 
 ## 🤝 贡献指南
 
-欢迎提交Issue和Pull Request！欢迎访问我们的[GitHub仓库](https://github.com/mercutiojohn/vi-tool)。
+欢迎提交Issue和Pull Request！欢迎访问[GitHub仓库](https://github.com/mercutiojohn/vi-tool)。
 
 ## 📄 版权说明
 
 本项目的代码采用 [MIT许可证](LICENSE) 进行开源。
 
 特别说明：
-- 项目中的图片资源（包括SVG文件）版权属于 Central Go (© 2025)，未经许可不得使用、复制或分发
+
+- 项目中的图片资源（包括SVG文件）版权属于 Central Go (© 2025)，CC-BY-NC-SA 4.0协议。
+- 这些资源不受此MIT许可证的保护。
 - App Copyright © 2025 Ryan.G
 - 该工具内容与官方运营单位无关，仅供参考
