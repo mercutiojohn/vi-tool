@@ -137,9 +137,9 @@ export default function App() {
       {/* 顶部导航栏 */}
       <header className="border-b bg-background h-14 flex items-center px-4 justify-between sticky top-0 z-10">
         <div className="flex items-center gap-2">
-          <Button variant="ghost" size="icon" className="text-muted-foreground">
+          {/* <Button variant="ghost" size="icon" className="text-muted-foreground">
             <Menu className="h-5 w-5" />
-          </Button>
+          </Button> */}
           <h1 className="text-xl font-bold text-foreground flex items-center gap-2">
             {APP_NAME}
             <Badge variant="secondary" className="ml-1 font-normal">Beta</Badge>

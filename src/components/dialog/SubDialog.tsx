@@ -9,7 +9,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
-import { colorPalette } from '@/data/colorPalette';
+import { ColorPicker } from '@/components/ui/color-picker';
 
 interface SubDialogProps {
   onClose: () => void;
@@ -46,24 +46,11 @@ export default function SubDialog({ onClose, onConfirm }: SubDialogProps) {
             </RadioGroup>
           </div>
           
-          <div className="grid gap-2">
-            <Label>选择颜色</Label>
-            <div className="flex flex-wrap gap-2">
-              {colorPalette.map((color) => (
-                <div
-                  key={color.value}
-                  className="w-10 h-10 rounded cursor-pointer transition-all"
-                  style={{ 
-                    backgroundColor: color.value,
-                    border: selectedColor === color.value ? '2px solid white' : 'none',
-                    boxShadow: selectedColor === color.value ? '0 0 0 1px rgba(0,0,0,0.3)' : 'none'
-                  }}
-                  onClick={() => setSelectedColor(color.value)}
-                  title={color.name}
-                />
-              ))}
-            </div>
-          </div>
+          <ColorPicker
+            label="选择颜色"
+            value={selectedColor}
+            onChange={setSelectedColor}
+          />
         </div>
         
         <DialogFooter>
