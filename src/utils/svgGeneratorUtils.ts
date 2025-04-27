@@ -60,11 +60,64 @@ export async function generateColoredSVG(originFile: string, color: string): Pro
       console.warn('警告: 未找到可替换的颜色属性');
     }
     
+    // 打印SVG内容以便调试
+    console.log('处理后的SVG内容:', svgText);
+    
+    // 确保SVG内容完整性
+    if (!svgText.includes('<?xml')) {
+      svgText = `<?xml version="1.0" encoding="UTF-8"?>${svgText}`;
+    }
+    
+    // 确保SVG标签有正确的属性
+    const svgMatch = svgText.match(/<svg[^>]*>/);
+    if (svgMatch) {
+      let svgTag = svgMatch[0];
+      
+      // 添加xmlns属性
+      if (!svgTag.includes('xmlns=')) {
+        svgTag = svgTag.replace('<svg', '<svg xmlns="http://www.w3.org/2000/svg"');
+      }
+      
+      // 确保有width和height属性
+      if (!svgTag.includes('width=')) {
+        svgTag = svgTag.replace('<svg', '<svg width="150"');
+      }
+      if (!svgTag.includes('height=')) {
+        svgTag = svgTag.replace('<svg', '<svg height="150"');
+      }
+      
+      // 确保有viewBox属性
+      if (!svgTag.includes('viewBox=')) {
+        svgTag = svgTag.replace('<svg', '<svg viewBox="0 0 150 150"');
+      }
+      
+      svgText = svgText.replace(/<svg[^>]*>/, svgTag);
+      console.log('更新后的SVG标签:', svgTag);
+    }
+
     // 创建Blob
-    const blob = new Blob([svgText], {type: 'image/svg+xml'});
+    const blob = new Blob([svgText], {
+      type: 'image/svg+xml;charset=utf-8'
+    });
     const url = URL.createObjectURL(blob);
     
-    console.log('生成着色SVG成功:', originFile, '->', `${originFile.split('.')[0]}_${color.slice(1)}.svg`, url);
+    // 验证URL是否可访问
+    try {
+      const checkResponse = await fetch(url);
+      if (!checkResponse.ok) {
+        throw new Error(`Invalid blob URL: ${checkResponse.status}`);
+      }
+      console.log('Blob URL验证成功');
+    } catch (error) {
+      console.error('Blob URL验证失败:', error);
+    }
+    
+    console.log('生成着色SVG成功:', {
+      originFile,
+      targetFile: `${originFile.split('.')[0]}_${color.slice(1)}.svg`,
+      url,
+      contentLength: svgText.length
+    });
     
     // 返回文件名和URL
     return {

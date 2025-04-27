@@ -1,5 +1,5 @@
-import { useRef, useEffect, useState } from 'react';
-import { SvgItem, CanvasItemProps } from '@/types';
+import { useRef, useEffect, useState, useCallback } from 'react';
+import { CanvasItemProps } from '@/types';
 import { cn } from '@/lib/utils';
 
 interface Props extends CanvasItemProps {
@@ -13,12 +13,27 @@ export default function CanvasItem({ item, isActive, onItemClick, className }: P
   const imgRef = useRef<HTMLImageElement>(null);
   
   useEffect(() => {
-    if (imgRef.current && imgRef.current.complete) {
-      updateImageSize();
+    console.log('CanvasItem: 项目更新:', item);
+    if (imgRef.current) {
+      if (imgRef.current.complete) {
+        console.log('CanvasItem: 图片已加载完成，更新尺寸');
+        updateImageSize();
+      } else {
+        console.log('CanvasItem: 图片尚未加载完成');
+      }
     }
   }, [item]);
+
+  const handleError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+    console.error('CanvasItem: 图片加载失败:', {
+      src: e.currentTarget.src,
+      naturalWidth: e.currentTarget.naturalWidth,
+      naturalHeight: e.currentTarget.naturalHeight,
+      error: e
+    });
+  };
   
-  const updateImageSize = () => {
+  const updateImageSize = useCallback(() => {
     if (!imgRef.current) return;
     
     const aspectRatio = imgRef.current.naturalWidth / imgRef.current.naturalHeight;
@@ -26,7 +41,7 @@ export default function CanvasItem({ item, isActive, onItemClick, className }: P
       width: CANVAS_HEIGHT * aspectRatio,
       height: CANVAS_HEIGHT
     });
-  };
+  }, []);
   
   const handleClick = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -46,6 +61,7 @@ export default function CanvasItem({ item, isActive, onItemClick, className }: P
     >
       <img
         ref={imgRef}
+        key={item.customUrl || item.file} // Add key to force re-render when URL changes
         src={item.customUrl || `./${item.file}`}
         alt={item.file}
         style={{ 
@@ -53,6 +69,8 @@ export default function CanvasItem({ item, isActive, onItemClick, className }: P
           width: `${imgSize.width}px`
         }}
         onLoad={updateImageSize}
+        onError={handleError}
+        crossOrigin="anonymous"
       />
     </div>
   );
