@@ -13,13 +13,38 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { Info, Eraser, Save, Download } from 'lucide-react';
+import { 
+  Info, 
+  Eraser, 
+  Save, 
+  Download, 
+  Menu, 
+  PanelLeft, 
+  Undo, 
+  Redo,
+  Github,
+  Loader2
+} from 'lucide-react';
 import { SvgItem } from './types';
+import { 
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { Separator } from '@/components/ui/separator';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { cn } from '@/lib/utils';
+import { Badge } from '@/components/ui/badge';
 
 export default function App() {
   const [fontBuffer, setFontBuffer] = useState<ArrayBuffer | null>(null);
   const [isHelpOpen, setIsHelpOpen] = useState(false);
   const [canvasItems, setCanvasItems] = useState<SvgItem[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   
   // 监听canvasItems变化
   useEffect(() => {
@@ -29,9 +54,16 @@ export default function App() {
   // 加载字体
   useEffect(() => {
     async function loadFontData() {
-      const buffer = await loadFonts();
-      if (buffer) {
-        setFontBuffer(buffer);
+      setIsLoading(true);
+      try {
+        const buffer = await loadFonts();
+        if (buffer) {
+          setFontBuffer(buffer);
+        }
+      } catch (error) {
+        console.error("加载字体失败", error);
+      } finally {
+        setIsLoading(false);
       }
     }
     loadFontData();
@@ -39,6 +71,8 @@ export default function App() {
   
   // 清空画板
   const handleClear = () => {
+    if (canvasItems.length === 0) return;
+    
     if (confirm('确定要清空画板吗？')) {
       setCanvasItems([]);
     }
@@ -51,28 +85,32 @@ export default function App() {
 
   // 导出JPG
   const handleExportJpg = async () => {
-    if (fontBuffer) {
-      if (canvasItems.length === 0) {
-        alert('画板中没有可导出的图标');
-        return;
-      }
-      await exportAsJPG(canvasItems, fontBuffer);
-    } else {
+    if (!fontBuffer) {
       alert('字体尚未加载完成，请稍后再试');
+      return;
     }
+    
+    if (canvasItems.length === 0) {
+      alert('画板中没有可导出的图标');
+      return;
+    }
+    
+    await exportAsJPG(canvasItems, fontBuffer);
   };
 
   // 导出SVG
   const handleExportSvg = async () => {
-    if (fontBuffer) {
-      if (canvasItems.length === 0) {
-        alert('画板中没有可导出的图标');
-        return;
-      }
-      await exportAsSVG(canvasItems, fontBuffer);
-    } else {
+    if (!fontBuffer) {
       alert('字体尚未加载完成，请稍后再试');
+      return;
     }
+    
+    if (canvasItems.length === 0) {
+      alert('画板中没有可导出的图标');
+      return;
+    }
+    
+    await exportAsSVG(canvasItems, fontBuffer);
   };
 
   // 添加项目到画布
@@ -85,84 +123,152 @@ export default function App() {
     };
     setCanvasItems(prev => [...prev, newItem]);
   };
+
+  // 切换侧边栏折叠状态
+  const toggleSidebar = () => {
+    setIsSidebarCollapsed(!isSidebarCollapsed);
+  };
   
   return (
-    <div className="flex flex-col min-h-screen">
-      <header className="border-b bg-background py-6">
-        <div className="container mx-auto px-4 text-center">
-          <h1 className="text-3xl font-bold text-primary mb-2">NaL 导向标志生成器</h1>
-          <p className="text-muted-foreground mb-4">
-            <span className="inline-flex items-center">
-              <Download className="h-4 w-4 mr-1 rotate-180" />
-              {new Date().toLocaleDateString('zh-CN')}更新
-            </span>
-            <span className="mx-2">|</span>
-            <span className="inline-flex items-center">
-              <Eraser className="h-4 w-4 mr-1" />
-              清理缓存以加载新功能
-            </span>
-          </p>
+    <div className="flex flex-col h-screen bg-background">
+      {/* 顶部导航栏 */}
+      <header className="border-b bg-background h-14 flex items-center px-4 justify-between sticky top-0 z-10">
+        <div className="flex items-center gap-2">
+          <Button variant="ghost" size="icon" className="text-muted-foreground">
+            <Menu className="h-5 w-5" />
+          </Button>
+          <h1 className="text-xl font-bold text-foreground flex items-center gap-2">
+            NaL 导向标志生成器
+            <Badge variant="secondary" className="ml-1 font-normal">Beta</Badge>
+          </h1>
+        </div>
+        
+        <div className="flex items-center gap-2">
+          <Button variant="outline" size="sm" onClick={showHelp} className="flex items-center gap-1">
+            <Info className="h-4 w-4" /> 帮助
+          </Button>
           
-          <div className="flex flex-wrap justify-center gap-4">
-            <Button 
-              variant="outline" 
-              onClick={showHelp}
-              className="flex items-center gap-2"
-            >
-              <Info className="h-4 w-4" /> 帮助
-            </Button>
-            <Button 
-              variant="destructive"
-              onClick={handleClear}
-              className="flex items-center gap-2"
-            >
-              <Eraser className="h-4 w-4" /> 清空画板
-            </Button>
-            <Button 
-              variant="secondary" 
-              onClick={handleExportJpg}
-              className="flex items-center gap-2"
-            >
-              <Save className="h-4 w-4" /> 导出为JPG
-            </Button>
-            <Button 
-              variant="default" 
-              onClick={handleExportSvg}
-              className="flex items-center gap-2"
-            >
-              <Download className="h-4 w-4" /> 下载SVG
-            </Button>
-          </div>
+          <Separator orientation="vertical" className="h-6" />
+          
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm">
+                <Download className="h-4 w-4 mr-1" />
+                导出
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>导出选项</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={handleExportJpg} className="flex items-center gap-2">
+                <Save className="h-4 w-4" />
+                导出为JPG
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={handleExportSvg} className="flex items-center gap-2">
+                <Download className="h-4 w-4" />
+                下载SVG
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </header>
       
-      <main className="flex-1 p-8 flex justify-center items-center">
-        <Canvas 
-          items={canvasItems}
-          onItemsChange={setCanvasItems}
-          onAddItem={handleAddItem}
-        />
-      </main>
-      
-      <Toolbar 
-        onAddItem={handleAddItem} 
-      />
-      
-      <footer className="bg-muted py-6 text-center -mt-20 relative">
-        <div className="container mx-auto">
-          <div className="text-foreground font-bold mb-2">Copyright © 2025 Central Go</div>
-          <div className="text-sm mb-2">
-            <a href="https://beian.miit.gov.cn/" className="text-muted-foreground hover:text-foreground transition-colors">京ICP备2023014659号</a>
+      {/* 主内容区 */}
+      <div className="flex flex-1 overflow-hidden">
+        {/* 左侧工具栏 */}
+        <div className="flex h-full">
+          <Toolbar 
+            onAddItem={handleAddItem}
+            isCollapsed={isSidebarCollapsed}
+            onToggleCollapse={toggleSidebar}
+          />
+        </div>
+        
+        {/* 右侧工作区 */}
+        <div className="flex-1 overflow-hidden flex flex-col">
+          {/* 工具栏 */}
+          <div className="flex items-center justify-between border-b p-2">
+            <div className="flex items-center gap-2">
+              <Button variant="ghost" size="sm" disabled className="text-muted-foreground flex gap-1">
+                <Undo className="h-4 w-4" />
+                撤销
+              </Button>
+              <Button variant="ghost" size="sm" disabled className="text-muted-foreground flex gap-1">
+                <Redo className="h-4 w-4" />
+                重做
+              </Button>
+              <Separator orientation="vertical" className="h-6" />
+              <Button 
+                variant="destructive" 
+                size="sm"
+                onClick={handleClear}
+                disabled={canvasItems.length === 0}
+                className="flex items-center gap-1"
+              >
+                <Eraser className="h-4 w-4" /> 清空画板
+              </Button>
+            </div>
+            
+            <div className="text-xs text-muted-foreground">
+              最后更新：{new Date().toLocaleDateString('zh-CN')}
+            </div>
           </div>
-          <div className="text-sm flex items-center justify-center">
-            <img src="../beian.png" alt="备案" className="h-[15px] mr-1" />
-            <a href="https://beian.mps.gov.cn/#/query/webSearch?code=11010802042299" 
-               rel="noreferrer noopener" 
-               target="_blank"
-               className="text-muted-foreground hover:text-foreground transition-colors">
-              京公网安备11010802042299号
-            </a>
-          </div>
+          
+          {/* 画布区域 */}
+          <ScrollArea className="flex-1 p-8">
+            {isLoading ? (
+              <div className="h-full flex flex-col items-center justify-center">
+                <Loader2 className="h-8 w-8 animate-spin text-muted-foreground mb-2" />
+                <p className="text-muted-foreground">正在加载资源...</p>
+              </div>
+            ) : (
+              <div className="max-w-6xl mx-auto h-full flex flex-col">
+                <Canvas 
+                  items={canvasItems}
+                  onItemsChange={setCanvasItems}
+                  onAddItem={handleAddItem}
+                />
+                
+                {canvasItems.length === 0 && (
+                  <div className="mt-12 text-center text-muted-foreground flex flex-col items-center">
+                    <PanelLeft className="h-12 w-12 mb-4 text-muted-foreground/50" />
+                    <h3 className="text-lg font-medium mb-2">开始创建您的导向标志</h3>
+                    <p className="max-w-md text-sm">从左侧工具栏拖拽元素到画布，或点击元素添加到画布。点击画布中的元素可以编辑、复制或删除。</p>
+                  </div>
+                )}
+              </div>
+            )}
+          </ScrollArea>
+        </div>
+      </div>
+      
+      {/* 底部状态栏 */}
+      <footer className="border-t py-2 px-4 bg-muted/30 text-xs text-muted-foreground flex items-center justify-between">
+        <div className="flex items-center">
+          <span className="mr-2">Copyright © 2025 Central Go</span>
+          <Separator orientation="vertical" className="h-3 mx-2" />
+          <a href="https://beian.miit.gov.cn/" className="hover:text-foreground transition-colors">京ICP备2023014659号</a>
+          <Separator orientation="vertical" className="h-3 mx-2" />
+          <a href="https://beian.mps.gov.cn/#/query/webSearch?code=11010802042299" 
+             rel="noreferrer noopener" 
+             target="_blank"
+             className="hover:text-foreground transition-colors flex items-center">
+            <img src="/beian.png" alt="备案" className="h-[14px] mr-1" />
+            京公网安备11010802042299号
+          </a>
+        </div>
+        
+        <div className="flex items-center gap-2">
+          <a 
+            href="https://github.com/yourusername/your-repo" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="text-muted-foreground hover:text-foreground transition-colors inline-flex items-center gap-1"
+          >
+            <Github className="h-3 w-3" />
+            <span>GitHub</span>
+          </a>
+          <span>v0.85</span>
         </div>
       </footer>
 
@@ -173,7 +279,7 @@ export default function App() {
             <AlertDialogDescription className="space-y-2 text-foreground/80">
               <p className="flex items-start">
                 <span className="mr-2">1.</span> 
-                <span>点击底部工具栏图标添加到画板，拖拽即可排序，亦可点击图标打开菜单。</span>
+                <span>从左侧工具栏选择图标添加到画板，拖拽即可排序，点击图标打开菜单。</span>
               </p>
               <p className="flex items-start">
                 <span className="mr-2">2.</span> 
@@ -199,6 +305,7 @@ export default function App() {
                   <li>优化工具栏SVG代码格式</li>
                   <li>增加分支出口排版方式</li>
                   <li>增加更多素材</li>
+                  <li>全新侧边栏界面设计</li>
                 </ul>
               </div>
             </AlertDialogDescription>

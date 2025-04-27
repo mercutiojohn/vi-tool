@@ -158,15 +158,19 @@ export default function Canvas({ items: externalItems, onItemsChange, onAddItem 
   };
   
   return (
-    <div className="w-full max-w-6xl mx-auto overflow-x-auto">
+    <div className="w-full mx-auto">
+      <div className="bg-muted/50 p-2 rounded-lg mb-4 text-sm text-muted-foreground">
+        设计区域 - 将图标添加到此处，拖拽调整顺序
+      </div>
+      
       <div 
         ref={canvasRef}
-        className={`h-[${CANVAS_HEIGHT}px] bg-[#001D31] rounded-lg flex items-center transition-all px-[25px] ${items.length === 0 ? 'w-[50px] p-0' : ''}`}
+        className={`h-[${CANVAS_HEIGHT}px] bg-[#001D31] rounded-lg flex items-center transition-all px-[25px] border-2 border-dashed border-border/50 ${items.length === 0 ? 'justify-center min-w-[200px]' : ''}`}
         onDragOver={(e) => handleDragOver(e, draggingItem, items, canvasRef, updateItems)}
         onDrop={(e) => handleDrop(e, items, canvasRef, handleAddItem, updateItems)}
       >
         {items.length === 0 ? (
-          <div className="text-white opacity-50">拖拽图标添加</div>
+          <div className="text-white/50 text-sm">拖拽或点击图标添加到此区域</div>
         ) : (
           items.map((item, index) => (
             <CanvasItem

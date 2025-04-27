@@ -15,13 +15,23 @@ import {
   generateTextSVG, 
   generateTextSubSVG 
 } from '@/utils/svgGeneratorUtils';
-import { PlusCircle } from 'lucide-react';
+import { 
+  PlusCircle, 
+  ChevronLeft, 
+  ChevronRight, 
+  PanelLeft
+} from 'lucide-react';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { cn } from '@/lib/utils';
 
 interface ToolbarProps {
   onAddItem: (file: string, customUrl?: string) => void;
+  isCollapsed?: boolean;
+  onToggleCollapse?: () => void;
 }
 
-export default function Toolbar({ onAddItem }: ToolbarProps) {
+export default function Toolbar({ onAddItem, isCollapsed = false, onToggleCollapse }: ToolbarProps) {
   const [activeTab, setActiveTab] = useState<SvgTypes>('line');
   const [showTextDialog, setShowTextDialog] = useState(false);
   const [showSubDialog, setShowSubDialog] = useState(false);
@@ -55,7 +65,7 @@ export default function Toolbar({ onAddItem }: ToolbarProps) {
       return (
         <Button 
           variant="default" 
-          className="bg-primary hover:bg-primary/80 min-w-[120px]"
+          className="bg-primary hover:bg-primary/80 w-full mb-2"
           onClick={() => setShowTextDialog(true)}
         >
           <PlusCircle className="mr-2 h-4 w-4" />
@@ -65,72 +75,120 @@ export default function Toolbar({ onAddItem }: ToolbarProps) {
     } 
     
     if (activeTab === 'sub') {
-      return groupedSvgs[activeTab].map(file => {
-        if (file === 'sub@exit.svg') {
-          return (
-            <ToolbarItem 
-              key={file} 
-              file={file} 
-              onClick={() => setShowSubDialog(true)} 
-            />
-          );
-        } else if (file === 'sub@text.svg') {
-          return (
-            <ToolbarItem 
-              key={file} 
-              file={file} 
-              onClick={() => setShowTextDialog(true)} 
-            />
-          );
-        } else if (file.startsWith('sub@')) {
-          return (
-            <ToolbarItem 
-              key={file} 
-              file={file} 
-              onClick={() => {
-                setCurrentColorFile(file);
-                setShowColorDialog(true);
-              }} 
-            />
-          );
-        }
-        
-        return (
+      return (
+        <div className="grid grid-cols-2 gap-2 p-2">
+          {groupedSvgs[activeTab].map(file => {
+            if (file === 'sub@exit.svg') {
+              return (
+                <ToolbarItem 
+                  key={file} 
+                  file={file} 
+                  onClick={() => setShowSubDialog(true)} 
+                />
+              );
+            } else if (file === 'sub@text.svg') {
+              return (
+                <ToolbarItem 
+                  key={file} 
+                  file={file} 
+                  onClick={() => setShowTextDialog(true)} 
+                />
+              );
+            } else if (file.startsWith('sub@')) {
+              return (
+                <ToolbarItem 
+                  key={file} 
+                  file={file} 
+                  onClick={() => {
+                    setCurrentColorFile(file);
+                    setShowColorDialog(true);
+                  }} 
+                />
+              );
+            }
+            
+            return (
+              <ToolbarItem 
+                key={file} 
+                file={file} 
+                onClick={() => onAddItem(file)} 
+              />
+            );
+          })}
+        </div>
+      );
+    }
+    
+    return (
+      <div className="grid grid-cols-2 gap-2 p-2">
+        {groupedSvgs[activeTab]?.map(file => (
           <ToolbarItem 
             key={file} 
             file={file} 
             onClick={() => onAddItem(file)} 
           />
-        );
-      });
-    }
-    
-    return groupedSvgs[activeTab]?.map(file => (
-      <ToolbarItem 
-        key={file} 
-        file={file} 
-        onClick={() => onAddItem(file)} 
-      />
-    ));
-  };
-  
-  return (
-    <div className="bg-secondary -mt-20">
-      <div className="flex bg-primary px-4 py-2 overflow-x-auto">
-        {Object.keys(groupedSvgs).map(type => (
-          <ToolbarTab
-            key={type}
-            type={type as SvgTypes}
-            isActive={activeTab === type}
-            onClick={() => setActiveTab(type as SvgTypes)}
-            label={typeNames[type] || type}
-          />
         ))}
       </div>
+    );
+  };
+
+  // 渲染Tabs
+  const renderTabs = () => (
+    <div className={cn(
+      "flex flex-col gap-1 p-2 border-r border-border",
+      isCollapsed ? "w-14" : "w-[100px]"
+    )}>
+      {Object.keys(groupedSvgs).map(type => (
+        <TooltipProvider key={type} delayDuration={100}>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button onClick={() => setActiveTab(type as SvgTypes)}>
+                <ToolbarTab
+                  type={type as SvgTypes}
+                  isActive={activeTab === type}
+                  onClick={() => setActiveTab(type as SvgTypes)}
+                  label={typeNames[type] || type}
+                  isCollapsed={isCollapsed}
+                />
+              </button>
+            </TooltipTrigger>
+            {isCollapsed && (
+              <TooltipContent side="right">
+                {typeNames[type] || type}
+              </TooltipContent>
+            )}
+          </Tooltip>
+        </TooltipProvider>
+      ))}
+    </div>
+  );
+  
+  return (
+    <div className={cn(
+      "flex h-full border-r border-border bg-background transition-all duration-300",
+      isCollapsed ? "w-14" : "w-[300px]"
+    )}>
+      {renderTabs()}
       
-      <div className="flex flex-wrap gap-4 p-4 overflow-x-auto">
-        {renderToolbarItems()}
-      </div>
+      {!isCollapsed && (
+        <ScrollArea className="flex-1">
+          <div className="p-2">
+            <div className="mb-2 px-2 py-1.5 text-sm font-medium text-muted-foreground">
+              {typeNames[activeTab] || activeTab}
+            </div>
+            {renderToolbarItems()}
+          </div>
+        </ScrollArea>
+      )}
+
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={onToggleCollapse}
+        className="absolute bottom-4 right-0 translate-x-1/2 w-6 h-6 rounded-full border shadow-md bg-background z-10"
+      >
+        {isCollapsed ? <ChevronRight className="h-3 w-3" /> : <ChevronLeft className="h-3 w-3" />}
+      </Button>
       
       {showTextDialog && (
         <TextDialog 

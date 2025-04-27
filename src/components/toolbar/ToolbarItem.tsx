@@ -29,7 +29,7 @@ export default function ToolbarItem({ file, onClick }: ToolbarItemProps) {
     <div 
       className="h-[60px] min-w-[60px] cursor-pointer flex-shrink-0 
                 flex items-center justify-center px-2.5 relative 
-                toolbar-item rounded-md bg-secondary hover:bg-secondary-foreground/20"
+                toolbar-item rounded-md bg-primary-darker"
       data-file={file}
       onClick={onClick}
       draggable={true}
