@@ -27,7 +27,7 @@ export async function exportAsJPG(items: SvgItem[]) {
   
   // 第一阶段：计算所有元素宽度
   for (const item of items) {
-    const img = await loadImage(`./${item.file}`);
+    const img = await loadImage(item.customUrl || `/${item.file}`);
     if (img) {
       const aspectRatio = img.naturalWidth / img.naturalHeight;
       const scaledWidth = CANVAS_HEIGHT * aspectRatio * scaleFactor;
@@ -70,7 +70,7 @@ export async function exportAsJPG(items: SvgItem[]) {
   // 第三阶段：绘制元素
   let xPos = 25 * scaleFactor;
   for (let i = 0; i < items.length; i++) {
-    const img = await loadImage(`/${items[i].file}`); // 从public目录加载
+    const img = await loadImage(items[i].customUrl || `./public/${items[i].file}`);
     if (img) {
       const width = itemWidths[i];
       ctx.drawImage(img, xPos, 0, width, exportHeight);
@@ -105,7 +105,13 @@ export async function exportAsSVG(items: SvgItem[], fontBuffer: ArrayBuffer) {
   const itemData: {element: SVGElement, width: number, spacing: number}[] = [];
   
   for (const item of items) {
-    const svgContent = await fetchSvgContent(item.file);
+    let svgContent;
+    if (item.customUrl) {
+      const response = await fetch(item.customUrl);
+      svgContent = await response.text();
+    } else {
+      svgContent = await fetchSvgContent(item.file);
+    }
     if (svgContent) {
       const parser = new DOMParser();
       const svgElement = parser.parseFromString(svgContent, 'image/svg+xml').documentElement as unknown as SVGElement;
@@ -211,7 +217,7 @@ function loadImage(src: string): Promise<HTMLImageElement> {
 
 async function fetchSvgContent(file: string): Promise<string | null> {
   try {
-    const response = await fetch(`./${file}`);
+    const response = await fetch(`./public/${file}`);
     return await response.text();
   } catch (error) {
     console.error('获取SVG内容失败:', error);
