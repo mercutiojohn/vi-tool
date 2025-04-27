@@ -204,8 +204,9 @@ export default function Toolbar({ onAddItem, isCollapsed = false, onToggleCollap
       
       {showTextDialog && (
         <TextDialog 
+          mode={activeTab === 'sub' ? 'colorBand' : 'normal'} // 根据当前标签页设置模式
           onClose={() => setShowTextDialog(false)}
-          onConfirm={async (cnText, enText, alignment) => {
+          onConfirm={async (cnText, enText, alignment, hasColorBand, colorBandColor) => {
             if (!fontBuffer) {
               alert('字体尚未加载完成，请稍后再试');
               setShowTextDialog(false);
@@ -213,10 +214,16 @@ export default function Toolbar({ onAddItem, isCollapsed = false, onToggleCollap
             }
             
             try {
-              // 根据当前标签页决定生成普通文本还是带色带的文本
-              if (activeTab === 'sub') {
+              // 根据参数决定生成什么类型的文本
+              if (activeTab === 'sub' || hasColorBand) {
                 // 生成带色带的文本
-                const result = await generateTextSubSVG(cnText, enText, alignment, '#001D31', fontBuffer);
+                const result = await generateTextSubSVG(
+                  cnText, 
+                  enText, 
+                  alignment, 
+                  colorBandColor || '#001D31', 
+                  fontBuffer
+                );
                 onAddItem(result.fileName, result.url);
               } else {
                 // 生成普通文本
