@@ -15,14 +15,17 @@ export async function generateSubSVG(alignment: string, color: string): Promise<
     
     // 替换颜色属性
     svgText = svgText
-      // 替换fill属性
+      // 处理fill属性(包括双引号和单引号的情况)
       .replace(/fill=["']#[0-9a-fA-F]{3,6}["']/g, `fill="${color}"`)
-      .replace(/fill:\s*#[0-9a-fA-F]{3,6}/g, `fill:${color}`)
-      // 替换style中的fill
-      .replace(/(style=["'][^"']*fill:\s*)(#[0-9a-fA-F]{3,6})([^"']*["'])/g, `$1${color}$3`)
-      // 修复重复的引号
-      .replace(/""([^"]*)""/, '"$1"')
-      .replace(/"([^"]*)""/g, '"$1"');
+      // 处理style中的fill
+      .replace(/(fill:\s*)(#[0-9a-fA-F]{3,6})/g, `$1${color}`)
+      .replace(/(style=["'].*?fill:\s*)(#[0-9a-fA-F]{3,6})(.*?["'])/g, `$1${color}$3`)
+      // 处理特定颜色值
+      .replace(/#003670/g, color)
+      .replace(/#3670/g, color)
+      // 修复可能的引号问题
+      .replace(/""+/g, '"')
+      .replace(/''+/g, "'");
     
     // 创建Blob
     const blob = new Blob([svgText], {type: 'image/svg+xml'});
@@ -59,14 +62,17 @@ export async function generateColoredSVG(originFile: string, color: string): Pro
     // 替换颜色属性
     const originalSvgText = svgText;
     svgText = svgText
-      // 替换fill属性
+      // 处理fill属性(包括双引号和单引号的情况)
       .replace(/fill=["']#[0-9a-fA-F]{3,6}["']/g, `fill="${color}"`)
-      .replace(/fill:\s*#[0-9a-fA-F]{3,6}/g, `fill:${color}`)
-      // 替换style中的fill
-      .replace(/(style=["'][^"']*fill:\s*)(#[0-9a-fA-F]{3,6})([^"']*["'])/g, `$1${color}$3`)
-      // 修复重复的引号
-      .replace(/""([^"]*)""/, '"$1"')
-      .replace(/"([^"]*)""/g, '"$1"');
+      // 处理style中的fill
+      .replace(/(fill:\s*)(#[0-9a-fA-F]{3,6})/g, `$1${color}`)
+      .replace(/(style=["'].*?fill:\s*)(#[0-9a-fA-F]{3,6})(.*?["'])/g, `$1${color}$3`)
+      // 处理特定颜色值
+      .replace(/#003670/g, color)
+      .replace(/#3670/g, color)
+      // 修复可能的引号问题
+      .replace(/""+/g, '"')
+      .replace(/''+/g, "'");
     
     if (originalSvgText === svgText) {
       console.warn('警告: 未找到可替换的颜色属性，原始SVG:', originalSvgText);
