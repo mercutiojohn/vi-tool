@@ -6,6 +6,7 @@ import StepContextMenu from '../ContextMenu';
 import { getDynamicSpacing } from '@/utils/spacingRules';
 import { handleDragOver, handleDrop } from '@/utils/dragUtils';
 import { cn } from '@/lib/utils';
+import { PanelLeft } from 'lucide-react';
 
 interface CanvasProps {
   items?: SvgItem[];
@@ -232,10 +233,6 @@ const Canvas = forwardRef<CanvasRef, CanvasProps>(({
   
   return (
     <div className={cn("w-full mx-auto", className)}>
-      <div className="bg-muted/50 p-2 rounded-lg mb-4 text-sm text-muted-foreground">
-        将导向标志添加到此处，拖拽调整顺序；右键单击可进行更多操作
-      </div>
-      
       <div 
         ref={canvasRef}
         className={`h-[${CANVAS_HEIGHT}px] bg-[#001D31] rounded-lg transition-all px-[25px] border-2 border-dashed border-border/50 overflow-x-auto overflow-y-hidden ${items.length === 0 ? 'min-w-[200px]' : ''}`}
@@ -247,11 +244,16 @@ const Canvas = forwardRef<CanvasRef, CanvasProps>(({
         onDrop={(e) => handleDrop(e, items, canvasRef as React.RefObject<HTMLDivElement>, handleAddItem, updateItems)}
       >
         <div 
-          className="inline-flex items-center h-full min-w-max"
+          className="inline-flex items-center h-full min-w-full"
           style={{ flexShrink: 0 }}
         >
           {items.length === 0 ? (
-            <div className="text-white/50 text-sm w-full text-center">拖拽或点击导向标志添加到此区域</div>
+            // <div className="text-white/50 text-sm w-full text-center">拖拽或点击导向标志添加到此区域</div>
+            <div className="w-full text-center text-primary-foreground flex flex-col items-center">
+              {/* <PanelLeft className="h-12 w-12 mb-4 text-muted-foreground/50" /> */}
+              <h3 className="text-lg font-medium mb-2">开始创建您的导向标志</h3>
+              <p className="max-w-md text-sm">从左侧工具栏拖拽元素到这里，或点击元素添加。点击画布中的元素可以编辑、复制或删除。</p>
+            </div>
           ) : (
             items.map((item, index) => (
               <StepContextMenu
@@ -278,6 +280,10 @@ const Canvas = forwardRef<CanvasRef, CanvasProps>(({
             ))
           )}
         </div>
+      </div>
+
+      <div className="p-2 rounded-lg mt-4 text-sm text-muted-foreground text-end">
+        拖拽调整顺序；右键单击可进行更多操作
       </div>
     </div>
   );

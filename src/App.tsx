@@ -268,13 +268,13 @@ export default function App() {
                   className="z-10"
                 />
                 
-                {canvasItems.length === 0 && (
+                {/* {canvasItems.length === 0 && (
                   <div className="mt-12 text-center text-muted-foreground flex flex-col items-center">
                     <PanelLeft className="h-12 w-12 mb-4 text-muted-foreground/50" />
                     <h3 className="text-lg font-medium mb-2">开始创建您的导向标志</h3>
                     <p className="max-w-md text-sm">从左侧工具栏拖拽元素到画布，或点击元素添加到画布。点击画布中的元素可以编辑、复制或删除。</p>
                   </div>
-                )}
+                )} */}
               </div>
             )}
           </div>
