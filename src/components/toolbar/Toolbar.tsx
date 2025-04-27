@@ -165,10 +165,13 @@ export default function Toolbar({ onAddItem, isCollapsed = false, onToggleCollap
   
   return (
     <div className={cn(
-      "flex h-full border-r border-border bg-background transition-all duration-300",
-      isCollapsed ? "w-14" : "w-[300px]"
+      "flex h-full border-r border-border bg-background",
+      // "transition-width duration-300",
+      // isCollapsed ? "w-14" : "w-[300px]"
+      isCollapsed ? "w-0" : "w-[300px]"
     )}>
-      {renderTabs()}
+      {/* {renderTabs()} */}
+      {!isCollapsed && renderTabs()}
       
       {!isCollapsed && (
         <ScrollArea className="flex-1">
@@ -185,7 +188,7 @@ export default function Toolbar({ onAddItem, isCollapsed = false, onToggleCollap
         variant="ghost"
         size="icon"
         onClick={onToggleCollapse}
-        className="absolute bottom-4 right-0 translate-x-1/2 w-6 h-6 rounded-full border shadow-md bg-background z-10"
+        className="absolute bottom-12 left-0 translate-x-1/2 w-6 h-6 rounded-full border shadow-md bg-background z-10"
       >
         {isCollapsed ? <ChevronRight className="h-3 w-3" /> : <ChevronLeft className="h-3 w-3" />}
       </Button>

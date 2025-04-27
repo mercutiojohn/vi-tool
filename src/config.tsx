@@ -7,6 +7,10 @@ import {
 import Layout from "./components/layout";
 import App from "./App";
 
+export const GITHUB_URL = "https://github.com/mercutiojohn/vi-tool";
+
+export const APP_VERSION  = `v0.85`;
+
 export const ROUTER_ITEMS = createBrowserRouter([
   {
     path: "/",

@@ -1,56 +1,99 @@
-import { cn } from '@/lib/utils';
+import { useState, useRef } from "react";
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuTrigger,
+  ContextMenuSeparator
+} from "@/components/ui/context-menu";
+import { MoveLeft, MoveRight, Copy, Trash2 } from "lucide-react";
 
-interface ContextMenuProps {
-  x: number;
-  y: number;
+interface StepContextMenuProps {
+  children: React.ReactNode;
   onMoveLeft: () => void;
   onMoveRight: () => void;
   onDuplicate: () => void;
   onRemove: () => void;
   canMoveLeft: boolean;
   canMoveRight: boolean;
+  onItemClick?: () => void; // 添加原有的点击处理
 }
 
-export default function ContextMenu({
-  x, y, onMoveLeft, onMoveRight, onDuplicate, onRemove, canMoveLeft, canMoveRight
-}: ContextMenuProps) {
+export default function StepContextMenu({
+  children,
+  onMoveLeft,
+  onMoveRight,
+  onDuplicate,
+  onRemove,
+  canMoveLeft,
+  canMoveRight,
+  onItemClick
+}: StepContextMenuProps) {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const contextMenuRef = useRef<HTMLDivElement>(null);
+  
+  // 处理点击事件，如果不是右键点击则触发菜单
+  const handleClick = (e: React.MouseEvent) => {
+    // 确保只有左键点击才执行此功能
+    if (e.button === 0) {
+      // 阻止事件冒泡
+      e.stopPropagation();
+      
+      // 调用原来的点击处理函数
+      if (onItemClick) {
+        onItemClick();
+      }
+      
+      // 如果菜单已打开，则不要再次触发
+      if (!isMenuOpen) {
+        // 使用Radix上下文菜单API手动打开菜单
+        const contextMenuElement = contextMenuRef.current;
+        if (contextMenuElement) {
+          // 创建并分发自定义上下文菜单事件
+          const contextEvent = new MouseEvent('contextmenu', {
+            bubbles: true,
+            cancelable: true,
+            clientX: e.clientX,
+            clientY: e.clientY
+          });
+          contextMenuElement.dispatchEvent(contextEvent);
+        }
+      }
+    }
+  };
+  
   return (
-    <div 
-      className="fixed bg-white rounded-md flex gap-1 p-1 z-50"
-      style={{ left: `${x}px`, top: `${y}px` }}
-    >
-      <button 
-        className={cn(
-          "p-2 rounded-md hover:bg-gray-100",
-          !canMoveLeft && "opacity-50 cursor-not-allowed"
-        )}
-        onClick={onMoveLeft}
-        disabled={!canMoveLeft}
-      >
-        ⬅️
-      </button>
-      <button 
-        className="p-2 rounded-md hover:bg-gray-100"
-        onClick={onDuplicate}
-      >
-        ➕
-      </button>
-      <button 
-        className="p-2 rounded-md hover:bg-gray-100 text-red-500"
-        onClick={onRemove}
-      >
-        ❌
-      </button>
-      <button 
-        className={cn(
-          "p-2 rounded-md hover:bg-gray-100",
-          !canMoveRight && "opacity-50 cursor-not-allowed"
-        )}
-        onClick={onMoveRight}
-        disabled={!canMoveRight}
-      >
-        ➡️
-      </button>
+    <div ref={contextMenuRef} onClick={handleClick} className="inline-block">
+      <ContextMenu onOpenChange={setIsMenuOpen}>
+        <ContextMenuTrigger>{children}</ContextMenuTrigger>
+        <ContextMenuContent className="w-48">
+          <ContextMenuItem
+            onClick={onMoveLeft}
+            disabled={!canMoveLeft}
+            className={!canMoveLeft ? "opacity-50 cursor-not-allowed" : ""}
+          >
+            <MoveLeft className="mr-2 h-4 w-4" />
+            向左移动
+          </ContextMenuItem>
+          <ContextMenuItem
+            onClick={onMoveRight}
+            disabled={!canMoveRight}
+            className={!canMoveRight ? "opacity-50 cursor-not-allowed" : ""}
+          >
+            <MoveRight className="mr-2 h-4 w-4" />
+            向右移动
+          </ContextMenuItem>
+          <ContextMenuSeparator />
+          <ContextMenuItem onClick={onDuplicate}>
+            <Copy className="mr-2 h-4 w-4" />
+            复制
+          </ContextMenuItem>
+          <ContextMenuItem onClick={onRemove} variant="destructive">
+            <Trash2 className="mr-2 h-4 w-4" />
+            删除
+          </ContextMenuItem>
+        </ContextMenuContent>
+      </ContextMenu>
     </div>
   );
 }

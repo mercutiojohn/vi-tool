@@ -38,6 +38,7 @@ import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
+import { APP_VERSION, GITHUB_URL } from './config';
 
 export default function App() {
   const [fontBuffer, setFontBuffer] = useState<ArrayBuffer | null>(null);
@@ -260,7 +261,7 @@ export default function App() {
         
         <div className="flex items-center gap-2">
           <a 
-            href="https://github.com/yourusername/your-repo" 
+            href={GITHUB_URL} 
             target="_blank" 
             rel="noopener noreferrer"
             className="text-muted-foreground hover:text-foreground transition-colors inline-flex items-center gap-1"
@@ -268,7 +269,7 @@ export default function App() {
             <Github className="h-3 w-3" />
             <span>GitHub</span>
           </a>
-          <span>v0.85</span>
+          <span>{APP_VERSION}</span>
         </div>
       </footer>
 
@@ -293,7 +294,7 @@ export default function App() {
                 <span className="mr-2">4.</span> 
                 <span>工具内容与官方运营单位无关，仅供参考。</span>
               </p>
-              <div className="mt-4 pt-4 border-t border-border">
+              {/* <div className="mt-4 pt-4 border-t border-border">
                 <p className="font-bold mb-2 text-primary flex items-center">
                   <span className="bg-primary/10 rounded-full p-1 mr-2">
                     <Download className="h-4 w-4 text-primary" />
@@ -307,7 +308,7 @@ export default function App() {
                   <li>增加更多素材</li>
                   <li>全新侧边栏界面设计</li>
                 </ul>
-              </div>
+              </div> */}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

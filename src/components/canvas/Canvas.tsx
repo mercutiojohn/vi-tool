@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { SvgItem } from '@/types';
 import CanvasItem from './CanvasItem';
-import ContextMenu from '../ContextMenu';
+import StepContextMenu from '../ContextMenu';
 import { getDynamicSpacing } from '@/utils/spacingRules';
 import { handleDragOver, handleDrop } from '@/utils/dragUtils';
 
@@ -18,7 +18,6 @@ export default function Canvas({ items: externalItems, onItemsChange, onAddItem 
   const [items, setItems] = useState<SvgItem[]>(externalItems || []);
   const [activeItem, setActiveItem] = useState<SvgItem | null>(null);
   const [draggingItem, setDraggingItem] = useState<string | null>(null);
-  const [contextMenu, setContextMenu] = useState({ show: false, x: 0, y: 0 });
   const canvasRef = useRef<HTMLDivElement>(null);
   
   // 同步内部状态和外部状态
@@ -56,28 +55,10 @@ export default function Canvas({ items: externalItems, onItemsChange, onAddItem 
     }
   };
   
-  // 处理项目点击
-  const handleItemClick = (item: SvgItem, x: number, y: number) => {
-    if (activeItem?.id === item.id) {
-      hideContextMenu();
-    } else {
-      setActiveItem(item);
-      setContextMenu({ show: true, x, y });
-    }
-  };
-  
-  // 隐藏上下文菜单
-  const hideContextMenu = () => {
-    setContextMenu({ show: false, x: 0, y: 0 });
-    setActiveItem(null);
-  };
-  
   // 移动项目
-  const moveItem = (direction: 'left' | 'right') => {
-    if (!activeItem) return;
-    
+  const moveItem = (id: string, direction: 'left' | 'right') => {
     const newItems = [...items];
-    const index = newItems.findIndex(item => item.id === activeItem.id);
+    const index = newItems.findIndex(item => item.id === id);
     
     if (direction === 'left' && index > 0) {
       [newItems[index], newItems[index - 1]] = [newItems[index - 1], newItems[index]];
@@ -89,29 +70,26 @@ export default function Canvas({ items: externalItems, onItemsChange, onAddItem 
   };
   
   // 复制项目
-  const duplicateItem = () => {
-    if (!activeItem) return;
+  const duplicateItem = (id: string) => {
+    const itemToDuplicate = items.find(item => item.id === id);
+    if (!itemToDuplicate) return;
     
     const newItem: SvgItem = {
-      ...activeItem,
+      ...itemToDuplicate,
       id: Date.now() + Math.random().toString(36).substr(2, 9)
     };
     
-    const index = items.findIndex(item => item.id === activeItem.id);
+    const index = items.findIndex(item => item.id === id);
     const newItems = [...items];
     newItems.splice(index + 1, 0, newItem);
     
     updateItems(newItems);
-    setActiveItem(newItem);
   };
   
   // 删除项目
-  const removeItem = () => {
-    if (!activeItem) return;
-    
-    const newItems = items.filter(item => item.id !== activeItem.id);
+  const removeItem = (id: string) => {
+    const newItems = items.filter(item => item.id !== id);
     updateItems(newItems);
-    hideContextMenu();
   };
   
   // 使用getDynamicSpacing获取元素间距
@@ -131,24 +109,9 @@ export default function Canvas({ items: externalItems, onItemsChange, onAddItem 
     const spacing = getItemSpacing(index);
     return { marginRight: `${spacing}px` };
   };
-  
-  // 点击事件监听
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (contextMenu.show && 
-          canvasRef.current && 
-          !canvasRef.current.contains(e.target as Node)) {
-        hideContextMenu();
-      }
-    };
-    
-    document.addEventListener('click', handleClickOutside);
-    return () => document.removeEventListener('click', handleClickOutside);
-  }, [contextMenu]);
 
   // 处理拖拽开始
   const handleDragStart = (itemId: string) => {
-    hideContextMenu();
     setDraggingItem(itemId);
   };
 
@@ -173,33 +136,30 @@ export default function Canvas({ items: externalItems, onItemsChange, onAddItem 
           <div className="text-white/50 text-sm">拖拽或点击图标添加到此区域</div>
         ) : (
           items.map((item, index) => (
-            <CanvasItem
+            <StepContextMenu
               key={item.id}
-              item={item}
-              isActive={activeItem?.id === item.id}
-              isDragging={draggingItem === item.id}
-              onItemClick={handleItemClick}
-              onDragStart={() => handleDragStart(item.id)}
-              onDragEnd={handleDragEnd}
-              className="canvas-item"
-              style={getSpacingStyle(index)}
-            />
+              onMoveLeft={() => moveItem(item.id, 'left')}
+              onMoveRight={() => moveItem(item.id, 'right')}
+              onDuplicate={() => duplicateItem(item.id)}
+              onRemove={() => removeItem(item.id)}
+              canMoveLeft={index > 0}
+              canMoveRight={index < items.length - 1}
+              onItemClick={() => setActiveItem(item.id === activeItem?.id ? null : item)}
+            >
+              <CanvasItem
+                item={item}
+                isActive={activeItem?.id === item.id}
+                isDragging={draggingItem === item.id}
+                onDragStart={() => handleDragStart(item.id)}
+                onDragEnd={handleDragEnd}
+                className="canvas-item"
+                style={getSpacingStyle(index)}
+                onItemClick={() => setActiveItem(item.id === activeItem?.id ? null : item)}
+              />
+            </StepContextMenu>
           ))
         )}
       </div>
-      
-      {contextMenu.show && activeItem && (
-        <ContextMenu
-          x={contextMenu.x}
-          y={contextMenu.y}
-          onMoveLeft={() => moveItem('left')}
-          onMoveRight={() => moveItem('right')}
-          onDuplicate={duplicateItem}
-          onRemove={removeItem}
-          canMoveLeft={items.findIndex(item => item.id === activeItem.id) > 0}
-          canMoveRight={items.findIndex(item => item.id === activeItem.id) < items.length - 1}
-        />
-      )}
     </div>
   );
 }
