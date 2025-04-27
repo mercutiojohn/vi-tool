@@ -19,7 +19,8 @@
 - 无法拖拽到最后一个图标后
 
 ## 🛠️ 技术栈
-·
+
+- React
 - TypeScript
 - Vite
 - TailwindCSS
