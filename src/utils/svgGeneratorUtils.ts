@@ -82,7 +82,7 @@ export async function generateColoredSVG(originFile: string, color: string): Pro
     // 只替换色带部分的颜色
     svgText = svgText.replace(
       /(<g id="c"[^>]*>)([\s\S]*?)(<\/g>)/g,
-      (match, openTag, content, closeTag) => {
+      (_, openTag, content, closeTag) => {
         // 在色带部分内替换颜色
         const coloredContent = content
           .replace(/fill=["']#[0-9a-fA-F]{3,6}["']/g, `fill="${color}"`)

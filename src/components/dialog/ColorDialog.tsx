@@ -1,10 +1,10 @@
 import { useState } from 'react';
-import { 
-  Dialog, 
-  DialogContent, 
-  DialogHeader, 
-  DialogTitle, 
-  DialogFooter 
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { ColorPicker } from '@/components/ui/color-picker';
@@ -12,23 +12,27 @@ import { ColorPicker } from '@/components/ui/color-picker';
 interface ColorDialogProps {
   onClose: () => void;
   onConfirm: (color: string) => void;
-  originFile: string;
+  // originFile: string;
 }
 
-export default function ColorDialog({ onClose, onConfirm, originFile }: ColorDialogProps) {
+export default function ColorDialog({
+  onClose,
+  onConfirm,
+  // originFile
+}: ColorDialogProps) {
   const [selectedColor, setSelectedColor] = useState('#001D31');
-  
+
   const handleConfirm = () => {
     onConfirm(selectedColor);
   };
-  
+
   return (
     <Dialog open={true} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>选择色带颜色</DialogTitle>
         </DialogHeader>
-        
+
         <div className="grid gap-4 py-4">
           <ColorPicker
             label="选择颜色"
@@ -36,7 +40,7 @@ export default function ColorDialog({ onClose, onConfirm, originFile }: ColorDia
             onChange={setSelectedColor}
           />
         </div>
-        
+
         <DialogFooter>
           <Button variant="ghost" onClick={onClose}>取消</Button>
           <Button onClick={handleConfirm}>确定</Button>

@@ -1,4 +1,4 @@
-import { Home, Settings, Download } from "lucide-react"
+import { Home, Settings } from "lucide-react"
 
 import {
   createBrowserRouter

@@ -99,11 +99,11 @@ export default function App() {
       return;
     }
     
-    await exportAsJPG(canvasItems, fontBuffer);
+    await exportAsJPG(canvasItems);
   };
 
   // 导出SVG
-  const handleExportSvg = async () => {
+  const handleExportSvg = async (): Promise<void> => {
     if (!fontBuffer) {
       alert('字体尚未加载完成，请稍后再试');
       return;
@@ -119,7 +119,7 @@ export default function App() {
 
   // 添加项目到画布
   // 添加项目到画布
-  const handleAddItem = useCallback((file: string, customUrl?: string) => {
+  const handleAddItem = useCallback((file: string, customUrl?: string): string => {
     console.log('App: 添加新项目:', { file, customUrl });
     // 创建新项目
     const id = Date.now() + Math.random().toString(36).substr(2, 9);

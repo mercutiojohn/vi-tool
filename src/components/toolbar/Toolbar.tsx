@@ -18,8 +18,7 @@ import {
 import { 
   PlusCircle, 
   ChevronLeft, 
-  ChevronRight, 
-  PanelLeft
+  ChevronRight
 } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -151,7 +150,10 @@ export default function Toolbar({ onAddItem, isCollapsed = false, onToggleCollap
         <TooltipProvider key={type} delayDuration={100}>
           <Tooltip>
             <TooltipTrigger asChild>
-              <button onClick={() => setActiveTab(type as SvgTypes)}>
+              <button 
+                onClick={() => setActiveTab(type as SvgTypes)}
+                title={typeNames[type] || type}
+              >
                 <ToolbarTab
                   type={type as SvgTypes}
                   isActive={activeTab === type}
@@ -206,7 +208,7 @@ export default function Toolbar({ onAddItem, isCollapsed = false, onToggleCollap
         <TextDialog 
           mode={activeTab === 'sub' ? 'colorBand' : 'normal'} // 根据当前标签页设置模式
           onClose={() => setShowTextDialog(false)}
-          onConfirm={async (cnText, enText, alignment, hasColorBand, colorBandColor) => {
+          onConfirm={async (cnText: string, enText: string, alignment: string, hasColorBand: boolean, colorBandColor: string | undefined) => {
             if (!fontBuffer) {
               alert('字体尚未加载完成，请稍后再试');
               setShowTextDialog(false);
@@ -215,17 +217,17 @@ export default function Toolbar({ onAddItem, isCollapsed = false, onToggleCollap
             
             try {
               // 根据参数决定生成什么类型的文本
-              if (activeTab === 'sub' || hasColorBand) {
-                // 生成带色带的文本
+              // 生成带色带的文本
+              if (hasColorBand && colorBandColor) {
                 const result = await generateTextSubSVG(
                   cnText, 
                   enText, 
                   alignment, 
-                  colorBandColor || '#001D31', 
+                  colorBandColor, 
                   fontBuffer
                 );
                 onAddItem(result.fileName, result.url);
-              } else {
+              } else if (!hasColorBand) {
                 // 生成普通文本
                 const result = await generateTextSVG(cnText, enText, alignment, fontBuffer);
                 onAddItem(result.fileName, result.url);
@@ -273,7 +275,7 @@ export default function Toolbar({ onAddItem, isCollapsed = false, onToggleCollap
             
             setShowColorDialog(false);
           }}
-          originFile={currentColorFile}
+          // originFile={currentColorFile}
         />
       )}
     </div>

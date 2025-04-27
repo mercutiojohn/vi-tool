@@ -10,14 +10,12 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
-import { colorPalette } from '@/data/colorPalette';
 import { ColorPicker } from '@/components/ui/color-picker';
 
 interface TextDialogProps {
   onClose: () => void;
-  onConfirm: (cnText: string, enText: string, alignment: string, hasColorBand?: boolean, colorBandColor?: string) => void;
+  onConfirm: (cnText: string, enText: string, alignment: string, hasColorBand: boolean, colorBandColor: string | undefined) => void;
   mode?: 'normal' | 'colorBand'; // 新增模式参数，默认为普通模式
 }
 
@@ -83,7 +81,20 @@ export default function TextDialog({ onClose, onConfirm, mode = 'normal' }: Text
           </div>
           
           {/* 在色带模式下显示 */}
-          {(mode === 'colorBand') && (
+          {/* 普通模式下显示色带开关 */}
+          {mode === 'normal' && (
+            <div className="flex items-center space-x-2">
+              <Switch
+                id="color-band"
+                checked={hasColorBand}
+                onCheckedChange={setHasColorBand}
+              />
+              <Label htmlFor="color-band">添加色带</Label>
+            </div>
+          )}
+
+          {/* 色带模式或启用了色带时显示颜色选择器 */}
+          {(mode === 'colorBand' || hasColorBand) && (
             <ColorPicker
               label="色带颜色"
               value={colorBandColor}

@@ -24,4 +24,4 @@ export interface ToolbarItemProps {
   onClick: () => void;
 }
 
-export type SvgTypes = 'line' | 'way' | 'stn' | 'oth' | 'sub' | 'text' | 'cls' | 'clss';
+export type SvgTypes = 'line' | 'way' | 'stn' | 'oth' | 'sub' | 'text' | 'cls' | 'clss' | 'exit' | 'branch' | 'ic' | 'turn';
