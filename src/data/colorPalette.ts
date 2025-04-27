@@ -1,0 +1,32 @@
+import { ColorInfo } from '../types';
+
+export const colorPalette: ColorInfo[] = [
+  { name: '深蓝底色', value: '#001D31' },
+  { name: '1号线八通线', value: '#c23a30' },
+  { name: '2号线', value: '#006098' },
+  { name: '3号线', value: '#e60033' },
+  { name: '4号线大兴线', value: '#008e9c' },
+  { name: '5号线', value: '#a6217f' },
+  { name: '6号线', value: '#d29700' },
+  { name: '7号线', value: '#fac671' },
+  { name: '8号线', value: '#009b6b' },
+  { name: '9号线', value: '#8fc31f' },
+  { name: '10号线', value: '#009bc0' },
+  { name: '11号线', value: '#ed796b' },
+  { name: '12号线', value: '#c76b00' },
+  { name: '13号线', value: '#f9e700' },
+  { name: '14号线', value: '#d5a7a1' },
+  { name: '15号线', value: '#6a357d' },
+  { name: '16号线', value: '#76a32d' },
+  { name: '17号线', value: '#00a9a9' },
+  { name: '19号线', value: '#d6abc1' },
+  { name: '22号线', value: '#f7c8ce' },
+  { name: '亦庄线', value: '#e40077' },
+  { name: '房山线燕房线', value: '#e46022' },
+  { name: 'S1线', value: '#b25921' },
+  { name: '昌平线', value: '#de82b2' },
+  { name: '28号线', value: '#35570b' },
+  { name: '有轨电车', value: '#e6081b' },
+  { name: '首都机场线', value: '#a29bbb' },
+  { name: '大兴机场线', value: '#004ba0' }
+];

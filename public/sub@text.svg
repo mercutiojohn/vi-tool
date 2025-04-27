@@ -1,0 +1,41 @@
+<svg height="150" viewBox="0 0 210 150" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    @font-face {
+      font-family: 'SourceHanSansSC';
+      src: url('./SourceHanSansCN-VF.otf.woff2') format('woff2');
+      font-weight: 500;
+      font-style: normal;
+      font-display: swap;
+      ascent-override: 98%;
+      descent-override: 2%;
+    }
+    .text-base {
+      dominant-baseline: alphabetic;
+      alignment-baseline: alphabetic;
+    }
+    .cn {
+      font-family: 'SourceHanSansSC', sans-serif;
+      font-size: 47.6px;
+      font-weight: 500;
+      fill: #fff;
+      transform: translateY(0.12em);
+    }
+    .en {
+      font-family: Arial, sans-serif;
+      font-size: 26.5px;
+      fill: #fff;
+      font-weight: 700;
+      transform: translateY(0.08em);
+      letter-spacing: -0.01em;
+    }
+  </style>
+	<g id="b">
+  <text class="text-base cn" x="0" y="65.1"
+        text-anchor="start">中文内容</text>
+  <text class="text-base en" x="0" y="98.5"
+        text-anchor="start">English Text</text>
+</g>
+<g id="c">
+      <rect x="0" y="110" width="210" height="40" style="fill: #003670;"/>
+  </g>	
+	</svg>
