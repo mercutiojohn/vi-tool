@@ -4,7 +4,16 @@ import Canvas from '@/components/canvas/Canvas';
 import Toolbar from '@/components/toolbar/Toolbar';
 import { loadFonts } from '@/utils/fontUtils';
 import { exportAsJPG, exportAsSVG } from '@/utils/exportUtils';
-import { AlertDialog, AlertDialogAction, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from './components/ui/alert-dialog';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import { Info, Eraser, Save, Download } from 'lucide-react';
 import { SvgItem } from './types';
 
 export default function App() {
@@ -74,74 +83,83 @@ export default function App() {
       file,
       customUrl,
     };
-    console.log('App: 创建的新项目:', newItem);
-    setCanvasItems(prev => {
-      console.log('App: 当前items:', prev);
-      const newItems = [...prev, newItem];
-      console.log('App: 更新后的items:', newItems);
-      return newItems;
-    });
+    setCanvasItems(prev => [...prev, newItem]);
   };
   
   return (
     <div className="flex flex-col min-h-screen">
-      <header className="bg-white py-6 shadow-md">
-        <div className="container mx-auto text-center">
-          <h1 className="text-3xl font-bold text-[#001D31] mb-2">NaL 导向标志生成器</h1>
-          <p className="text-gray-600 mb-4">🔄 {new Date().toLocaleDateString('zh-CN')}更新 🧹 清理缓存以加载新功能</p>
+      <header className="border-b bg-background py-6">
+        <div className="container mx-auto px-4 text-center">
+          <h1 className="text-3xl font-bold text-primary mb-2">NaL 导向标志生成器</h1>
+          <p className="text-muted-foreground mb-4">
+            <span className="inline-flex items-center">
+              <Download className="h-4 w-4 mr-1 rotate-180" />
+              {new Date().toLocaleDateString('zh-CN')}更新
+            </span>
+            <span className="mx-2">|</span>
+            <span className="inline-flex items-center">
+              <Eraser className="h-4 w-4 mr-1" />
+              清理缓存以加载新功能
+            </span>
+          </p>
           
           <div className="flex flex-wrap justify-center gap-4">
             <Button 
               variant="outline" 
-              className="bg-[#bdcbd2] text-[#001D31] hover:bg-[#c5e3ef]"
               onClick={showHelp}
+              className="flex items-center gap-2"
             >
-              ℹ️ 帮助
+              <Info className="h-4 w-4" /> 帮助
             </Button>
             <Button 
               variant="destructive"
               onClick={handleClear}
+              className="flex items-center gap-2"
             >
-              🧽 清空画板
+              <Eraser className="h-4 w-4" /> 清空画板
             </Button>
             <Button 
-              variant="default" 
-              className="bg-[#001D31] hover:bg-[#003366]"
+              variant="secondary" 
               onClick={handleExportJpg}
+              className="flex items-center gap-2"
             >
-              💾 导出为JPG
+              <Save className="h-4 w-4" /> 导出为JPG
             </Button>
             <Button 
               variant="default" 
-              className="bg-[#001D31] hover:bg-[#003366]"
               onClick={handleExportSvg}
+              className="flex items-center gap-2"
             >
-              ⏬ 下载SVG
+              <Download className="h-4 w-4" /> 下载SVG
             </Button>
           </div>
         </div>
       </header>
       
       <main className="flex-1 p-8 flex justify-center items-center">
-          <Canvas 
-            items={canvasItems}
-            onItemsChange={setCanvasItems}
-          />
+        <Canvas 
+          items={canvasItems}
+          onItemsChange={setCanvasItems}
+          onAddItem={handleAddItem}
+        />
       </main>
       
       <Toolbar 
         onAddItem={handleAddItem} 
       />
       
-      <footer className="bg-[#BDCBD2] py-6 text-center -mt-20 relative">
+      <footer className="bg-muted py-6 text-center -mt-20 relative">
         <div className="container mx-auto">
-          <div className="text-[#001D31] font-bold mb-2">Copyright © 2025 Central Go</div>
+          <div className="text-foreground font-bold mb-2">Copyright © 2025 Central Go</div>
           <div className="text-sm mb-2">
-            <a href="https://beian.miit.gov.cn/">京ICP备2023014659号</a>
+            <a href="https://beian.miit.gov.cn/" className="text-muted-foreground hover:text-foreground transition-colors">京ICP备2023014659号</a>
           </div>
           <div className="text-sm flex items-center justify-center">
             <img src="../beian.png" alt="备案" className="h-[15px] mr-1" />
-            <a href="https://beian.mps.gov.cn/#/query/webSearch?code=11010802042299" rel="noreferrer noopener" target="_blank">
+            <a href="https://beian.mps.gov.cn/#/query/webSearch?code=11010802042299" 
+               rel="noreferrer noopener" 
+               target="_blank"
+               className="text-muted-foreground hover:text-foreground transition-colors">
               京公网安备11010802042299号
             </a>
           </div>
@@ -149,23 +167,44 @@ export default function App() {
       </footer>
 
       <AlertDialog open={isHelpOpen} onOpenChange={setIsHelpOpen}>
-        <AlertDialogContent>
+        <AlertDialogContent className="max-w-md">
           <AlertDialogHeader>
-            <AlertDialogTitle>使用帮助</AlertDialogTitle>
-            <AlertDialogDescription>
-              <p>1️⃣点击底部工具栏图标添加到画板，拖拽即可排序，亦可点击图标打开菜单。</p>
-              <p>2️⃣目前该工具仍为测试版本，部分功能尚未实现，仅供参考体验。</p>
-              <p>3️⃣首次打开时，需要5-10秒进行加载，请耐心等待。</p>
-              <p>4️⃣工具内容与官方运营单位无关，仅供参考。</p>
-              <p className="mt-4 font-bold">🍉版本0.85🍑</p>
-              <p>1️⃣加入导出SVG功能。</p>
-              <p>2️⃣优化工具栏SVG代码格式。</p>
-              <p>3️⃣增加分支出口排版方式。</p>
-              <p>4️⃣增加更多素材。</p>
+            <AlertDialogTitle className="text-xl">使用帮助</AlertDialogTitle>
+            <AlertDialogDescription className="space-y-2 text-foreground/80">
+              <p className="flex items-start">
+                <span className="mr-2">1.</span> 
+                <span>点击底部工具栏图标添加到画板，拖拽即可排序，亦可点击图标打开菜单。</span>
+              </p>
+              <p className="flex items-start">
+                <span className="mr-2">2.</span> 
+                <span>目前该工具仍为测试版本，部分功能尚未实现，仅供参考体验。</span>
+              </p>
+              <p className="flex items-start">
+                <span className="mr-2">3.</span> 
+                <span>首次打开时，需要5-10秒进行加载，请耐心等待。</span>
+              </p>
+              <p className="flex items-start">
+                <span className="mr-2">4.</span> 
+                <span>工具内容与官方运营单位无关，仅供参考。</span>
+              </p>
+              <div className="mt-4 pt-4 border-t border-border">
+                <p className="font-bold mb-2 text-primary flex items-center">
+                  <span className="bg-primary/10 rounded-full p-1 mr-2">
+                    <Download className="h-4 w-4 text-primary" />
+                  </span>
+                  版本0.85
+                </p>
+                <ul className="space-y-1 pl-6 list-disc">
+                  <li>加入导出SVG功能</li>
+                  <li>优化工具栏SVG代码格式</li>
+                  <li>增加分支出口排版方式</li>
+                  <li>增加更多素材</li>
+                </ul>
+              </div>
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogAction>确定</AlertDialogAction>
+            <AlertDialogAction className="w-full sm:w-auto">确定</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

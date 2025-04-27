@@ -54,25 +54,89 @@ export function handleDragOver(
   onItemsReorder: (newItems: SvgItem[]) => void
 ): void {
   e.preventDefault();
-  if (!draggingItemId || !containerRef.current) return;
-
-  const afterElement = getDragAfterElement(e.clientX, items, containerRef);
   
-  if (afterElement) {
-    const draggedItemIndex = items.findIndex(item => item.id === draggingItemId);
-    const afterElementIndex = items.findIndex(item => item.id === afterElement.id);
+  // 设置允许放置
+  e.dataTransfer.dropEffect = 'copy';
+  
+  // 处理内部拖拽重排序
+  if (draggingItemId && containerRef.current) {
+    const afterElement = getDragAfterElement(e.clientX, items, containerRef);
     
-    // 避免不必要的重新排序（如果放回原来的位置）
-    if (draggedItemIndex !== afterElementIndex && draggedItemIndex !== afterElementIndex - 1) {
-      const newItems = [...items];
-      const [draggedItem] = newItems.splice(draggedItemIndex, 1);
+    if (afterElement) {
+      const draggedItemIndex = items.findIndex(item => item.id === draggingItemId);
+      const afterElementIndex = items.findIndex(item => item.id === afterElement.id);
       
-      // 确定正确的插入位置
-      const insertIndex = afterElementIndex > draggedItemIndex ? afterElementIndex - 1 : afterElementIndex;
-      newItems.splice(insertIndex, 0, draggedItem);
+      // 避免不必要的重新排序（如果放回原来的位置）
+      if (draggedItemIndex !== afterElementIndex && draggedItemIndex !== afterElementIndex - 1) {
+        const newItems = [...items];
+        const [draggedItem] = newItems.splice(draggedItemIndex, 1);
+        
+        // 确定正确的插入位置
+        const insertIndex = afterElementIndex > draggedItemIndex ? afterElementIndex - 1 : afterElementIndex;
+        newItems.splice(insertIndex, 0, draggedItem);
+        
+        onItemsReorder(newItems);
+      }
+    }
+  }
+}
+
+/**
+ * 处理拖拽释放事件
+ * @param e 拖拽事件
+ * @param items 当前项目列表
+ * @param containerRef 容器引用
+ * @param onAddItem 添加项目的回调
+ * @param onItemsReorder 项目重新排序的回调
+ */
+export function handleDrop(
+  e: React.DragEvent,
+  items: SvgItem[],
+  containerRef: React.RefObject<HTMLElement>,
+  onAddItem: (file: string) => void,
+  onItemsReorder: (newItems: SvgItem[]) => void
+): void {
+  e.preventDefault();
+  
+  // 处理从工具栏拖入的文件
+  const file = e.dataTransfer.getData('application/vi-tool-file');
+  if (file) {
+    console.log('从工具栏拖入文件:', file);
+    
+    // 确定插入位置
+    const afterElement = getDragAfterElement(e.clientX, items, containerRef);
+    
+    // 先添加项目
+    onAddItem(file);
+    
+    // 如果有指定位置且不是添加到末尾，则重新排序
+    if (afterElement && items.length > 0) {
+      // 获取最新的项目列表（应该包含刚添加的项目）
+      const updatedItems = [...items, { id: Date.now().toString(), file: file }];
       
+      // 新添加的项目在最后，将它移动到正确的位置
+      const newItems = [...updatedItems];
+      const newItemIndex = newItems.length - 1;
+      const afterElementIndex = newItems.findIndex(item => item.id === afterElement.id);
+      
+      // 从最后位置删除
+      const [newItem] = newItems.splice(newItemIndex, 1);
+      
+      // 插入到正确位置
+      newItems.splice(afterElementIndex, 0, newItem);
+      
+      // 更新顺序
       onItemsReorder(newItems);
     }
+    
+    return;
+  }
+  
+  // 处理画布内部拖拽的文件ID（保留现有功能）
+  const itemId = e.dataTransfer.getData('text/plain');
+  if (itemId && items.find(item => item.id === itemId)) {
+    console.log('处理画布内部拖拽项:', itemId);
+    // 内部拖拽的逻辑已在handleDragOver中处理
   }
 }
 

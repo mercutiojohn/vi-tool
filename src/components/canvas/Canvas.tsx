@@ -3,17 +3,18 @@ import { SvgItem } from '@/types';
 import CanvasItem from './CanvasItem';
 import ContextMenu from '../ContextMenu';
 import { getDynamicSpacing } from '@/utils/spacingRules';
-import { handleDragOver } from '@/utils/dragUtils';
+import { handleDragOver, handleDrop } from '@/utils/dragUtils';
 
 interface CanvasProps {
   items?: SvgItem[];
   onItemsChange?: (items: SvgItem[]) => void;
+  onAddItem?: (file: string, customUrl?: string) => void;
 }
 
 const CANVAS_HEIGHT = 150;
 const DEFAULT_SPACING = 25;
 
-export default function Canvas({ items: externalItems, onItemsChange }: CanvasProps) {
+export default function Canvas({ items: externalItems, onItemsChange, onAddItem }: CanvasProps) {
   const [items, setItems] = useState<SvgItem[]>(externalItems || []);
   const [activeItem, setActiveItem] = useState<SvgItem | null>(null);
   const [draggingItem, setDraggingItem] = useState<string | null>(null);
@@ -44,6 +45,14 @@ export default function Canvas({ items: externalItems, onItemsChange }: CanvasPr
     if (onItemsChange) {
       console.log('Canvas: 通知父组件items变化');
       onItemsChange(newItems);
+    }
+  };
+  
+  // 添加新项目的处理函数
+  const handleAddItem = (file: string, customUrl?: string) => {
+    console.log('Canvas: 添加新项目:', file, customUrl);
+    if (onAddItem) {
+      onAddItem(file, customUrl);
     }
   };
   
@@ -154,6 +163,7 @@ export default function Canvas({ items: externalItems, onItemsChange }: CanvasPr
         ref={canvasRef}
         className={`h-[${CANVAS_HEIGHT}px] bg-[#001D31] rounded-lg flex items-center transition-all px-[25px] ${items.length === 0 ? 'w-[50px] p-0' : ''}`}
         onDragOver={(e) => handleDragOver(e, draggingItem, items, canvasRef, updateItems)}
+        onDrop={(e) => handleDrop(e, items, canvasRef, handleAddItem, updateItems)}
       >
         {items.length === 0 ? (
           <div className="text-white opacity-50">拖拽图标添加</div>
