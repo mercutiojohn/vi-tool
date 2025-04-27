@@ -59,23 +59,32 @@ export async function generateColoredSVG(originFile: string, color: string): Pro
     }
     let svgText = await response.text();
     
-    // 替换颜色属性
+    // 保存原始内容用于比较
     const originalSvgText = svgText;
+
+    // 只替换色带部分的颜色
+    svgText = svgText.replace(
+      /(<g id="c"[^>]*>)([\s\S]*?)(<\/g>)/g,
+      (match, openTag, content, closeTag) => {
+        // 在色带部分内替换颜色
+        const coloredContent = content
+          .replace(/fill=["']#[0-9a-fA-F]{3,6}["']/g, `fill="${color}"`)
+          .replace(/(fill:\s*)(#[0-9a-fA-F]{3,6})/g, `$1${color}`)
+          .replace(/(style=["'][^"']*fill:\s*)(#[0-9a-fA-F]{3,6})([^"']*["'])/g, `$1${color}$3`)
+          // 处理特定颜色值
+          .replace(/#003670/g, color)
+          .replace(/#3670/g, color);
+        return openTag + coloredContent + closeTag;
+      }
+    );
+
+    // 修复可能的引号问题
     svgText = svgText
-      // 处理fill属性(包括双引号和单引号的情况)
-      .replace(/fill=["']#[0-9a-fA-F]{3,6}["']/g, `fill="${color}"`)
-      // 处理style中的fill
-      .replace(/(fill:\s*)(#[0-9a-fA-F]{3,6})/g, `$1${color}`)
-      .replace(/(style=["'].*?fill:\s*)(#[0-9a-fA-F]{3,6})(.*?["'])/g, `$1${color}$3`)
-      // 处理特定颜色值
-      .replace(/#003670/g, color)
-      .replace(/#3670/g, color)
-      // 修复可能的引号问题
       .replace(/""+/g, '"')
       .replace(/''+/g, "'");
     
     if (originalSvgText === svgText) {
-      console.warn('警告: 未找到可替换的颜色属性，原始SVG:', originalSvgText);
+      console.warn('警告: 未找到id="c"的色带部分或颜色替换失败');
     }
     
     // 打印SVG内容以便调试
