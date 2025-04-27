@@ -1,5 +1,12 @@
 import { arrayBufferToBase64 } from './fontUtils';
 
+// 在创建Blob前验证SVG内容有效性
+function validateSvg(svgText: string): boolean {
+  const parser = new DOMParser();
+  const svgDoc = parser.parseFromString(svgText, 'image/svg+xml');
+  return !svgDoc.querySelector('parsererror');
+}
+
 /**
  * 生成色带SVG
  * @param alignment 对齐方式 ('left' | 'right')
@@ -15,14 +22,24 @@ export async function generateSubSVG(alignment: string, color: string): Promise<
     
     // 替换颜色属性
     svgText = svgText
+      // // 处理fill属性(包括双引号和单引号的情况)
+      // .replace(/fill=["']#[0-9a-fA-F]{3,6}["']/g, `fill="${color}"`)
+      // // 处理style中的fill
+      // .replace(/(fill:\s*)(#[0-9a-fA-F]{3,6})/g, `$1${color}`)
+      // .replace(/(style=["'].*?fill:\s*)(#[0-9a-fA-F]{3,6})(.*?["'])/g, `$1${color}$3`)
+      // .replace(/#3670/g, color)
       // 处理fill属性(包括双引号和单引号的情况)
-      .replace(/fill=["']#[0-9a-fA-F]{3,6}["']/g, `fill="${color}"`)
-      // 处理style中的fill
-      .replace(/(fill:\s*)(#[0-9a-fA-F]{3,6})/g, `$1${color}`)
-      .replace(/(style=["'].*?fill:\s*)(#[0-9a-fA-F]{3,6})(.*?["'])/g, `$1${color}$3`)
-      // 处理特定颜色值
+      .replace(/fill=["']#[0-9a-fA-F]{3,6}["']/g, (match) => {
+        // 只替换id="c"组内的颜色
+        return match.includes('#003670') ? `fill="${color}"` : match;
+      })
+      // 处理style中的fill，更精确匹配id="c"组内的内容
+      .replace(/(style=["'][^"']*fill:\s*)(#[0-9a-fA-F]{3,6})([^"']*["'])/g, (match, p1, colorValue, p3) => {
+        // 只替换特定颜色
+        return colorValue === '#003670' ? `${p1}${color}${p3}` : match;
+      })
+      // 处理特定颜色值 - 只替换我们确定要替换的颜色
       .replace(/#003670/g, color)
-      .replace(/#3670/g, color)
       // 修复可能的引号问题
       .replace(/""+/g, '"')
       .replace(/''+/g, "'");
@@ -120,6 +137,13 @@ export async function generateColoredSVG(originFile: string, color: string): Pro
       
       svgText = svgText.replace(/<svg[^>]*>/, svgTag);
       console.log('更新后的SVG标签:', svgTag);
+    }
+
+    // 在生成Blob前使用此函数验证
+    if (!validateSvg(svgText)) {
+      console.error('生成的SVG无效，可能导致加载失败');
+      console.log('无效的SVG内容:', svgText);
+      // 可以选择抛出错误或使用默认SVG
     }
 
     // 创建Blob
