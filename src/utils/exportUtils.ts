@@ -5,7 +5,7 @@ import { shouldReduceSpacing, isDotPair, isSubLinePair } from './spacingRules';
 const CANVAS_HEIGHT = 150;
 const DEFAULT_SPACING = 25;
 
-export async function exportAsJPG(items: SvgItem[], fontBuffer: ArrayBuffer) {
+export async function exportAsJPG(items: SvgItem[]) {
   if (items.length === 0) {
     alert('画板中没有可导出的图标');
     return;
@@ -70,7 +70,7 @@ export async function exportAsJPG(items: SvgItem[], fontBuffer: ArrayBuffer) {
   // 第三阶段：绘制元素
   let xPos = 25 * scaleFactor;
   for (let i = 0; i < items.length; i++) {
-    const img = await loadImage(`./${items[i].file}`);
+    const img = await loadImage(`/${items[i].file}`); // 从public目录加载
     if (img) {
       const width = itemWidths[i];
       ctx.drawImage(img, xPos, 0, width, exportHeight);
@@ -85,7 +85,7 @@ export async function exportAsJPG(items: SvgItem[], fontBuffer: ArrayBuffer) {
   }
 
   // 生成下载
-  const url = tempCanvas.toDataURL('image/jpeg', 0.95);
+  const url = tempCanvas.toDataURL('image/jpeg', 1.0); // 使用最高质量
   downloadFile(url, '导向标志.jpg');
 }
 
@@ -108,7 +108,7 @@ export async function exportAsSVG(items: SvgItem[], fontBuffer: ArrayBuffer) {
     const svgContent = await fetchSvgContent(item.file);
     if (svgContent) {
       const parser = new DOMParser();
-      const svgElement = parser.parseFromString(svgContent, 'image/svg+xml').documentElement as SVGElement;
+      const svgElement = parser.parseFromString(svgContent, 'image/svg+xml').documentElement as unknown as SVGElement;
       const viewBox = svgElement.getAttribute('viewBox');
       const width = viewBox ? parseInt(viewBox.split(' ')[2]) : 150;
       
