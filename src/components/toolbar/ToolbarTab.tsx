@@ -20,22 +20,30 @@ interface ToolbarTabProps {
   isCollapsed?: boolean;
 }
 
+const iconClassName = "size-5";
+
 // 每种类型对应的图标
 const typeIcons: Record<SvgTypes, React.ReactNode> = {
-  'line': <LineChart className="h-4 w-4" />,
-  'text': <Type className="h-4 w-4" />,
-  'exit': <SquareArrowOutUpRight className="h-4 w-4" />,
-  'sub': <Layers className="h-4 w-4" />,
-  'branch': <ArrowRight className="h-4 w-4" />,
-  'ic': <CircleDot className="h-4 w-4" />,
-  'turn': <Recycle className="h-4 w-4" />
+  'line': <LineChart className={iconClassName} />,
+  'text': <Type className={iconClassName} />,
+  'exit': <SquareArrowOutUpRight className={iconClassName} />,
+  'sub': <Layers className={iconClassName} />,
+  'branch': <ArrowRight className={iconClassName} />,
+  'ic': <CircleDot className={iconClassName} />,
+  'turn': <Recycle className={iconClassName} />,
+  'way': <Layers className={iconClassName} />,
+  'stn': <Layers className={iconClassName} />,
+  'oth': <Layers className={iconClassName} />,
+  'cls': <Layers className={iconClassName} />,
+  'clss': <Layers className={iconClassName} />,
+  // 'default': <CircleDot className={iconClassName} />
 };
 
 export default function ToolbarTab({ type, isActive, onClick, label, isCollapsed = false }: ToolbarTabProps) {
   return (
     <div
       className={cn(
-        "flex flex-col items-center justify-center cursor-pointer rounded-md transition-colors",
+        "flex flex-col gap-2 items-center justify-center cursor-pointer rounded-md transition-colors",
         isActive 
           ? "bg-primary text-primary-foreground font-medium" 
           : "text-muted-foreground hover:bg-secondary",
@@ -45,7 +53,7 @@ export default function ToolbarTab({ type, isActive, onClick, label, isCollapsed
       data-type={type}
     >
       <span className={cn(isCollapsed ? "" : "")}>
-        {typeIcons[type] || <CircleDot className="h-4 w-4" />}
+        {typeIcons[type] || <CircleDot className={iconClassName} />}
       </span>
       {!isCollapsed && <span className="text-xs">{label}</span>}
     </div>
