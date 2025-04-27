@@ -8,6 +8,7 @@ import Layout from "./components/layout";
 import App from "./App";
 
 export const GITHUB_URL = "https://github.com/mercutiojohn/vi-tool";
+export const CENTRAL_GO_URL = "https://centralgo.site";
 
 export const APP_NAME = "导向标志生成器";
 
@@ -36,6 +37,24 @@ export const HELP_CONTENT = `
 `;
 
 // 更新日志 - Markdown格式
+export const LICENSE_CONTENT = `
+## MIT License
+
+项目代码采用 MIT 许可证进行开源。
+
+## 资源版权
+
+- 项目中的图片资源（包括SVG文件）版权属于 Central Go (© 2025)，CC-BY-NC-SA 4.0协议。
+- 这些资源不受MIT许可证的保护。
+- 该工具内容与官方运营单位无关，仅供参考。
+`;
+
+export const CONTRIBUTION_CONTENT = `
+欢迎提交Issue和Pull Request！
+
+访问[GitHub仓库](${GITHUB_URL})参与贡献。
+`;
+
 export const UPDATE_LOG = `
 ## 版本${APP_VERSION}
 

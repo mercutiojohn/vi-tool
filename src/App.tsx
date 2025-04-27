@@ -18,11 +18,11 @@ import {
   Eraser, 
   Save, 
   Download, 
-  PanelLeft, 
   Undo, 
   Redo,
   Github,
-  Loader2
+  Loader2,
+  ArrowUpRight
 } from 'lucide-react';
 import { SvgItem } from './types';
 import { 
@@ -34,9 +34,18 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Separator } from '@/components/ui/separator';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
-import { APP_VERSION, GITHUB_URL, BEIAN_CONFIG, HELP_CONTENT, UPDATE_LOG, APP_NAME } from './config';
+import { 
+  APP_VERSION, 
+  GITHUB_URL,
+  CENTRAL_GO_URL,
+  BEIAN_CONFIG, 
+  HELP_CONTENT, 
+  UPDATE_LOG, 
+  APP_NAME,
+  LICENSE_CONTENT,
+  CONTRIBUTION_CONTENT 
+} from './config';
 // import { MDXProvider } from '@mdx-js/react';
 import ReactMarkdown from 'react-markdown';
 
@@ -44,6 +53,8 @@ export default function App() {
   const canvasRef = useRef<CanvasRef>(null);
   const [fontBuffer, setFontBuffer] = useState<ArrayBuffer | null>(null);
   const [isHelpOpen, setIsHelpOpen] = useState(false);
+  const [isLicenseOpen, setIsLicenseOpen] = useState(false);
+  const [isContributionOpen, setIsContributionOpen] = useState(false);
   const [canvasItems, setCanvasItems] = useState<SvgItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
@@ -153,6 +164,17 @@ export default function App() {
         </div>
         
         <div className="flex items-center gap-2">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            asChild
+          >
+            <a href={CENTRAL_GO_URL} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1">
+              Central Go
+              <ArrowUpRight className="h-4 w-4" />
+            </a>
+          </Button>
+          
           <Button variant="outline" size="sm" onClick={showHelp} className="flex items-center gap-1">
             <Info className="h-4 w-4" /> 帮助
           </Button>
@@ -161,7 +183,7 @@ export default function App() {
           
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm">
+              <Button size="sm">
                 <Download className="h-4 w-4 mr-1" />
                 导出
               </Button>
@@ -285,6 +307,9 @@ export default function App() {
       <footer className="border-t py-2 px-4 bg-muted/30 text-xs text-muted-foreground flex items-center justify-between">
         <div className="flex items-center">
           <span className="mr-2">{BEIAN_CONFIG.copyright}</span>
+          <Button variant="ghost" size="sm" onClick={() => setIsLicenseOpen(true)} className="text-xs flex items-center gap-1 !py-0 -my-2">
+            版权说明
+          </Button>
           <Separator orientation="vertical" className="h-3 mx-2" />
           {/* <a href={BEIAN_CONFIG.icp.url} className="hover:text-foreground transition-colors">
             {BEIAN_CONFIG.icp.text}
@@ -300,6 +325,9 @@ export default function App() {
         </div>
         
         <div className="flex items-center gap-2">
+          <Button variant="ghost" size="sm" onClick={() => setIsContributionOpen(true)} className="text-xs flex items-center gap-1 !py-0 -my-2">
+            贡献指南
+          </Button>
           <a 
             href={GITHUB_URL} 
             target="_blank" 
@@ -326,6 +354,42 @@ export default function App() {
               <div className="prose prose-sm dark:prose-invert prose-headings:text-primary prose-headings:flex prose-headings:items-center max-w-none mt-4 pt-4 border-t border-border">
                 <ReactMarkdown>
                   {UPDATE_LOG}
+                </ReactMarkdown>
+              </div>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogAction className="w-full sm:w-auto">确定</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog open={isLicenseOpen} onOpenChange={setIsLicenseOpen}>
+        <AlertDialogContent className="max-w-md">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-xl">版权说明</AlertDialogTitle>
+            <AlertDialogDescription>
+              <div className="prose prose-sm dark:prose-invert prose-headings:mb-2 prose-p:my-1 prose-ul:my-1 prose-li:my-0 max-w-none">
+                <ReactMarkdown>
+                  {LICENSE_CONTENT}
+                </ReactMarkdown>
+              </div>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogAction className="w-full sm:w-auto">确定</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog open={isContributionOpen} onOpenChange={setIsContributionOpen}>
+        <AlertDialogContent className="max-w-md">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-xl">贡献指南</AlertDialogTitle>
+            <AlertDialogDescription>
+              <div className="prose prose-sm dark:prose-invert prose-headings:mb-2 prose-p:my-1 prose-ul:my-1 prose-li:my-0 max-w-none">
+                <ReactMarkdown>
+                  {CONTRIBUTION_CONTENT}
                 </ReactMarkdown>
               </div>
             </AlertDialogDescription>
