@@ -10,7 +10,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
-import { Switch } from '@/components/ui/switch';
 import { ColorPicker } from '@/components/ui/color-picker';
 
 interface TextDialogProps {
@@ -23,7 +22,6 @@ export default function TextDialog({ onClose, onConfirm, mode = 'normal' }: Text
   const [cnText, setCnText] = useState('');
   const [enText, setEnText] = useState('');
   const [alignment, setAlignment] = useState('start');
-  const [hasColorBand, setHasColorBand] = useState(mode === 'colorBand');
   const [colorBandColor, setColorBandColor] = useState('#001D31');
   
   const handleConfirm = () => {
@@ -31,8 +29,7 @@ export default function TextDialog({ onClose, onConfirm, mode = 'normal' }: Text
       // 色带模式下，直接传递色带颜色
       onConfirm(cnText, enText, alignment, true, colorBandColor);
     } else {
-      // 普通模式下，根据开关决定是否传递色带参数
-      onConfirm(cnText, enText, alignment, hasColorBand, hasColorBand ? colorBandColor : undefined);
+      onConfirm(cnText, enText, alignment, false, undefined);
     }
   };
   
