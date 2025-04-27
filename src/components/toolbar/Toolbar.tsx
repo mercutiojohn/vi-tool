@@ -58,6 +58,15 @@ export default function Toolbar({ onAddItem, isCollapsed = false, onToggleCollap
     acc[type].push(file);
     return acc;
   }, {} as Record<SvgTypes, string[]>);
+
+  // 手动添加文本框类别，确保即使没有 text@ 开头的文件，也能显示文本框标签页
+  if (!groupedSvgs['text']) {
+    groupedSvgs['text'] = [
+      // 'text@left.svg',
+      // 'text@center.svg',
+      // 'text@right.svg'
+    ];
+  }
   
   // 加载工具栏项目
   const renderToolbarItems = () => {
