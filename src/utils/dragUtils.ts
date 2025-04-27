@@ -110,11 +110,10 @@ export function handleDrop(
     // 先添加项目
     onAddItem(file);
     
-    // 如果有指定位置且不是添加到末尾，则重新排序
-    if (afterElement && items.length > 0) {
-      // 获取最新的项目列表（应该包含刚添加的项目）
-      const updatedItems = [...items, { id: Date.now().toString(), file: file }];
-      
+    // 获取最新的项目列表（应该包含刚添加的项目）
+    const updatedItems = [...items, { id: Date.now().toString(), file: file }];
+    
+    if (afterElement) {
       // 新添加的项目在最后，将它移动到正确的位置
       const newItems = [...updatedItems];
       const newItemIndex = newItems.length - 1;
@@ -128,6 +127,9 @@ export function handleDrop(
       
       // 更新顺序
       onItemsReorder(newItems);
+    } else {
+      // 如果没有afterElement，则保持在最后位置
+      onItemsReorder(updatedItems);
     }
     
     return;
