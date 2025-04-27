@@ -13,10 +13,16 @@ export async function generateSubSVG(alignment: string, color: string): Promise<
     const response = await fetch(`./${svgFile}`);
     let svgText = await response.text();
     
-    // 替换颜色 - 支持多种可能的颜色属性格式
-    svgText = svgText.replace(/fill(:|=)["'\s]*#[0-9a-fA-F]{6}["'\s]*;?/g, `fill="${color}"`);
-    svgText = svgText.replace(/fill(:|=)["'\s]*#003670["'\s]*;?/g, `fill="${color}"`);
-    svgText = svgText.replace(/fill(:|=)["'\s]*#3670["'\s]*;?/g, `fill="${color}"`);
+    // 替换颜色属性
+    svgText = svgText
+      // 替换fill属性
+      .replace(/fill=["']#[0-9a-fA-F]{3,6}["']/g, `fill="${color}"`)
+      .replace(/fill:\s*#[0-9a-fA-F]{3,6}/g, `fill:${color}`)
+      // 替换style中的fill
+      .replace(/(style=["'][^"']*fill:\s*)(#[0-9a-fA-F]{3,6})([^"']*["'])/g, `$1${color}$3`)
+      // 修复重复的引号
+      .replace(/""([^"]*)""/, '"$1"')
+      .replace(/"([^"]*)""/g, '"$1"');
     
     // 创建Blob
     const blob = new Blob([svgText], {type: 'image/svg+xml'});
@@ -50,14 +56,20 @@ export async function generateColoredSVG(originFile: string, color: string): Pro
     }
     let svgText = await response.text();
     
-    // 替换颜色 - 支持多种可能的颜色属性格式
+    // 替换颜色属性
     const originalSvgText = svgText;
-    svgText = svgText.replace(/fill(:|=)["'\s]*#[0-9a-fA-F]{6}["'\s]*;?/g, `fill="${color}"`);
-    svgText = svgText.replace(/fill(:|=)["'\s]*#003670["'\s]*;?/g, `fill="${color}"`);
-    svgText = svgText.replace(/fill(:|=)["'\s]*#3670["'\s]*;?/g, `fill="${color}"`);
+    svgText = svgText
+      // 替换fill属性
+      .replace(/fill=["']#[0-9a-fA-F]{3,6}["']/g, `fill="${color}"`)
+      .replace(/fill:\s*#[0-9a-fA-F]{3,6}/g, `fill:${color}`)
+      // 替换style中的fill
+      .replace(/(style=["'][^"']*fill:\s*)(#[0-9a-fA-F]{3,6})([^"']*["'])/g, `$1${color}$3`)
+      // 修复重复的引号
+      .replace(/""([^"]*)""/, '"$1"')
+      .replace(/"([^"]*)""/g, '"$1"');
     
     if (originalSvgText === svgText) {
-      console.warn('警告: 未找到可替换的颜色属性');
+      console.warn('警告: 未找到可替换的颜色属性，原始SVG:', originalSvgText);
     }
     
     // 打印SVG内容以便调试
