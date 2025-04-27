@@ -94,7 +94,7 @@ export function handleDrop(
   e: React.DragEvent,
   items: SvgItem[],
   containerRef: React.RefObject<HTMLDivElement>,
-  onAddItem: (file: string) => void,
+  onAddItem: (file: string, customUrl?: string) => void,
   onItemsReorder: (newItems: SvgItem[]) => void
 ): void {
   e.preventDefault();
@@ -108,10 +108,10 @@ export function handleDrop(
     const afterElement = getDragAfterElement(e.clientX, items, containerRef);
     
     // 先添加项目
-    onAddItem(file);
+    onAddItem(file, undefined);
     
     // 获取最新的项目列表（应该包含刚添加的项目）
-    const updatedItems = [...items, { id: Date.now().toString(), file: file }];
+    const updatedItems = [...items, { id: Date.now().toString(), file }];
     
     if (afterElement) {
       // 新添加的项目在最后，将它移动到正确的位置

@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
-import Canvas from '@/components/canvas/Canvas';
+import Canvas, { CanvasRef } from '@/components/canvas/Canvas';
 import Toolbar from '@/components/toolbar/Toolbar';
 import { loadFonts } from '@/utils/fontUtils';
 import { exportAsJPG, exportAsSVG } from '@/utils/exportUtils';
@@ -18,7 +18,6 @@ import {
   Eraser, 
   Save, 
   Download, 
-  Menu, 
   PanelLeft, 
   Undo, 
   Redo,
@@ -36,18 +35,20 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import { APP_VERSION, GITHUB_URL, BEIAN_CONFIG, HELP_CONTENT, UPDATE_LOG, APP_NAME } from './config';
 // import { MDXProvider } from '@mdx-js/react';
 import ReactMarkdown from 'react-markdown';
 
 export default function App() {
+  const canvasRef = useRef<CanvasRef>(null);
   const [fontBuffer, setFontBuffer] = useState<ArrayBuffer | null>(null);
   const [isHelpOpen, setIsHelpOpen] = useState(false);
   const [canvasItems, setCanvasItems] = useState<SvgItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const [canUndo, setCanUndo] = useState(false);
+  const [canRedo, setCanRedo] = useState(false);
   
   // 监听canvasItems变化
   useEffect(() => {
@@ -117,15 +118,20 @@ export default function App() {
   };
 
   // 添加项目到画布
-  const handleAddItem = (file: string, customUrl?: string) => {
+  // 添加项目到画布
+  const handleAddItem = useCallback((file: string, customUrl?: string) => {
     console.log('App: 添加新项目:', { file, customUrl });
-    const newItem: SvgItem = {
-      id: Date.now() + Math.random().toString(36).substr(2, 9),
-      file,
-      customUrl,
-    };
-    setCanvasItems(prev => [...prev, newItem]);
-  };
+    // 创建新项目
+    const id = Date.now() + Math.random().toString(36).substr(2, 9);
+    const newItem: SvgItem = { id, file, customUrl };
+    // 使用newItem的引用更新状态
+    setCanvasItems(prev => {
+      const newItems = [...prev, newItem];
+      return newItems;
+    });
+    // 返回新创建的项目ID
+    return id;
+  }, []);
 
   // 切换侧边栏折叠状态
   const toggleSidebar = () => {
@@ -192,11 +198,23 @@ export default function App() {
           {/* 工具栏 */}
           <div className="flex items-center justify-between border-b p-2">
             <div className="flex items-center gap-2">
-              <Button variant="ghost" size="sm" disabled className="text-muted-foreground flex gap-1">
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                disabled={!canUndo}
+                className="text-muted-foreground flex gap-1"
+                onClick={() => canvasRef.current?.undo()}
+              >
                 <Undo className="h-4 w-4" />
                 撤销
               </Button>
-              <Button variant="ghost" size="sm" disabled className="text-muted-foreground flex gap-1">
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                disabled={!canRedo}
+                className="text-muted-foreground flex gap-1"
+                onClick={() => canvasRef.current?.redo()}
+              >
                 <Redo className="h-4 w-4" />
                 重做
               </Button>
@@ -226,10 +244,15 @@ export default function App() {
               </div>
             ) : (
               <div className="max-w-6xl mx-auto h-full flex flex-col">
-                <Canvas 
+                <Canvas
+                  ref={canvasRef}
                   items={canvasItems}
                   onItemsChange={setCanvasItems}
                   onAddItem={handleAddItem}
+                  onHistoryChange={state => {
+                    setCanUndo(state.canUndo);
+                    setCanRedo(state.canRedo);
+                  }}
                 />
                 
                 {canvasItems.length === 0 && (
