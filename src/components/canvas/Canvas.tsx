@@ -5,12 +5,14 @@ import CanvasItem from './CanvasItem';
 import StepContextMenu from '../ContextMenu';
 import { getDynamicSpacing } from '@/utils/spacingRules';
 import { handleDragOver, handleDrop } from '@/utils/dragUtils';
+import { cn } from '@/lib/utils';
 
 interface CanvasProps {
   items?: SvgItem[];
   onItemsChange?: (items: SvgItem[]) => void;
   onAddItem?: (file: string, customUrl?: string) => void;
   onHistoryChange?: (state: { canUndo: boolean; canRedo: boolean }) => void;
+  className?: string;
 }
 
 const CANVAS_HEIGHT = 150;
@@ -25,7 +27,8 @@ const Canvas = forwardRef<CanvasRef, CanvasProps>(({
   items: externalItems, 
   onItemsChange, 
   onAddItem,
-  onHistoryChange 
+  onHistoryChange,
+  className 
 }, ref) => {
   const [items, setItems] = useState<SvgItem[]>(externalItems || []);
   const [activeItem, setActiveItem] = useState<SvgItem | null>(null);
@@ -228,9 +231,9 @@ const Canvas = forwardRef<CanvasRef, CanvasProps>(({
   };
   
   return (
-    <div className="w-full mx-auto">
+    <div className={cn("w-full mx-auto", className)}>
       <div className="bg-muted/50 p-2 rounded-lg mb-4 text-sm text-muted-foreground">
-        将导向标志添加到此处，拖拽调整顺序
+        将导向标志添加到此处，拖拽调整顺序；右键单击可进行更多操作
       </div>
       
       <div 

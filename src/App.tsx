@@ -236,14 +236,26 @@ export default function App() {
           </div>
           
           {/* 画布区域 */}
-          <ScrollArea className="flex-1 p-8">
+          <div className="flex-1 p-8 h-full relative">
             {isLoading ? (
               <div className="h-full flex flex-col items-center justify-center">
                 <Loader2 className="h-8 w-8 animate-spin text-muted-foreground mb-2" />
                 <p className="text-muted-foreground">正在加载资源...</p>
               </div>
             ) : (
-              <div className="max-w-6xl mx-auto h-full flex flex-col">
+              <div className="max-w-6xl mx-auto h-full flex flex-col justify-center items-center">
+
+                <div className="absolute inset-0 bg-muted pointer-events-none" />
+                
+                {/* 画布 */}
+                <div 
+                  className="absolute inset-0 pointer-events-none"
+                  style={{
+                    backgroundImage: `radial-gradient(circle at 1px 1px, #00000023 1px, transparent 0)`,
+                    backgroundSize: '12px 12px',
+                  }}
+                />
+
                 <Canvas
                   ref={canvasRef}
                   items={canvasItems}
@@ -253,6 +265,7 @@ export default function App() {
                     setCanUndo(state.canUndo);
                     setCanRedo(state.canRedo);
                   }}
+                  className="z-10"
                 />
                 
                 {canvasItems.length === 0 && (
@@ -264,7 +277,7 @@ export default function App() {
                 )}
               </div>
             )}
-          </ScrollArea>
+          </div>
         </div>
       </div>
       
