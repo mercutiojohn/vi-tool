@@ -65,13 +65,15 @@ export default function CanvasItem({
   return (
     <div 
       className={cn(
-        "h-[150px] cursor-move transition-transform flex items-center flex-shrink-0",
+        "h-[150px] cursor-move transition-opacity flex items-center flex-shrink-0",
         isActive && "outline outline-4 outline-[#00a0e9] outline-offset-[-5px] rounded-md opacity-85",
         isDragging && "dragging opacity-50",
-        "hover:scale-105",
         className
       )}
-      style={style}
+      style={{
+        width: imgSize.width ? `${imgSize.width}px` : undefined,
+        ...style
+      }}
       onClick={handleClick}
       draggable={true}
       onDragStart={(e) => handleDragStart(e, item.id, onDragStart)}
@@ -80,12 +82,13 @@ export default function CanvasItem({
     >
       <img
         ref={imgRef}
-        key={item.customUrl || item.file} // Add key to force re-render when URL changes
+        key={item.customUrl || item.file}
         src={item.customUrl || `./${item.file}`}
         alt={item.file}
         style={{ 
           height: `${imgSize.height}px`,
-          width: `${imgSize.width}px`
+          width: `${imgSize.width}px`,
+          flexShrink: 0
         }}
         onLoad={updateImageSize}
         onError={handleError}
