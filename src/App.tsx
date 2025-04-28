@@ -49,6 +49,7 @@ import {
 } from './config';
 // import { MDXProvider } from '@mdx-js/react';
 import ReactMarkdown from 'react-markdown';
+import { saveCanvasItems, loadCanvasItems } from '@/utils/storageUtils';
 
 export default function App() {
   const canvasRef = useRef<CanvasRef>(null);
@@ -62,10 +63,15 @@ export default function App() {
   const [canUndo, setCanUndo] = useState(false);
   const [canRedo, setCanRedo] = useState(false);
   
-  // 监听canvasItems变化
+  // 监听canvasItems变化并保存到IndexedDB
   useEffect(() => {
-    console.log('App: canvasItems更新:', canvasItems);
-  }, [canvasItems]);
+    if (!isLoading) { // 只在加载完成后保存数据
+      console.log('App: canvasItems更新:', canvasItems);
+      saveCanvasItems(canvasItems).catch(error => {
+        console.error('保存画布数据失败:', error);
+      });
+    }
+  }, [canvasItems, isLoading]);
 
   // 加载字体
   useEffect(() => {
@@ -75,6 +81,15 @@ export default function App() {
         const buffer = await loadFonts();
         if (buffer) {
           setFontBuffer(buffer);
+        // 加载完字体后，尝试从IndexedDB恢复数据
+        try {
+          const items = await loadCanvasItems();
+          if (items.length > 0) {
+            setCanvasItems(items);
+          }
+        } catch (error) {
+          console.error('从IndexedDB加载数据失败:', error);
+        }
         }
       } catch (error) {
         console.error("加载字体失败", error);
