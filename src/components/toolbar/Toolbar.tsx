@@ -155,7 +155,7 @@ export default function Toolbar({ onAddItem, isCollapsed = false, onToggleCollap
       "flex border-border bg-background",
       "md:h-full md:flex-row md:border-r",
       "h-24 flex-col border-t",
-      isCollapsed ? "w-0" : "md:w-[300px] max-md:h-[40svh]"
+      isCollapsed ? "w-0" : "md:w-[300px] max-md:h-[55svh]"
     )}>
       {!isCollapsed && (
         <div className={cn(
