@@ -149,52 +149,51 @@ export default function Toolbar({ onAddItem, isCollapsed = false, onToggleCollap
     );
   };
 
-  // 渲染Tabs
-  const renderTabs = () => (
-    <div className={cn(
-      "flex flex-col gap-1 p-2 border-r border-border",
-      isCollapsed ? "w-14" : "w-[100px]"
-    )}>
-      {Object.keys(groupedSvgs).map(type => (
-        <TooltipProvider key={type} delayDuration={100}>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <button 
-                onClick={() => setActiveTab(type as SvgTypes)}
-                title={typeNames[type] || type}
-              >
-                <ToolbarTab
-                  type={type as SvgTypes}
-                  isActive={activeTab === type}
-                  onClick={() => setActiveTab(type as SvgTypes)}
-                  label={typeNames[type] || type}
-                  isCollapsed={isCollapsed}
-                />
-              </button>
-            </TooltipTrigger>
-            {isCollapsed && (
-              <TooltipContent side="right">
-                {typeNames[type] || type}
-              </TooltipContent>
-            )}
-          </Tooltip>
-        </TooltipProvider>
-      ))}
-    </div>
-  );
-  
+
   return (
     <div className={cn(
-      "flex h-full border-r border-border bg-background",
-      // "transition-width duration-300",
-      // isCollapsed ? "w-14" : "w-[300px]"
-      isCollapsed ? "w-0" : "w-[300px]"
+      "flex border-border bg-background",
+      "md:h-full md:flex-row md:border-r",
+      "h-24 flex-col border-t",
+      isCollapsed ? "w-0" : "md:w-[300px] max-md:h-[40svh]"
     )}>
-      {/* {renderTabs()} */}
-      {!isCollapsed && renderTabs()}
+      {!isCollapsed && (
+        <div className={cn(
+          "md:flex-col md:border-r md:p-2",
+          "flex flex-row overflow-x-auto no-scrollbar py-2 border-b md:border-b-0 gap-2",
+          "max-md:px-3",
+        )}>
+          {Object.keys(groupedSvgs).map(type => (
+            <TooltipProvider key={type} delayDuration={100}>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button 
+                    onClick={() => setActiveTab(type as SvgTypes)}
+                    title={typeNames[type] || type}
+                    className="flex-none"
+                  >
+                    <ToolbarTab
+                      type={type as SvgTypes}
+                      isActive={activeTab === type}
+                      onClick={() => setActiveTab(type as SvgTypes)}
+                      label={typeNames[type] || type}
+                      isCollapsed={isCollapsed}
+                    />
+                  </button>
+                </TooltipTrigger>
+                {isCollapsed && (
+                  <TooltipContent side="right">
+                    {typeNames[type] || type}
+                  </TooltipContent>
+                )}
+              </Tooltip>
+            </TooltipProvider>
+          ))}
+        </div>
+      )}
       
       {!isCollapsed && (
-        <ScrollArea className="flex-1">
+        <ScrollArea className="flex-1 overflow-x-auto md:overflow-x-hidden">
           <div className="p-2">
             <div className="mb-2 px-2 py-1.5 text-sm font-medium text-muted-foreground">
               {typeNames[activeTab] || activeTab}
@@ -208,7 +207,11 @@ export default function Toolbar({ onAddItem, isCollapsed = false, onToggleCollap
         variant="ghost"
         size="icon"
         onClick={onToggleCollapse}
-        className="absolute bottom-12 left-0 translate-x-1/2 w-6 h-6 rounded-full border shadow-md bg-background z-10"
+        className={cn(
+          "absolute w-6 h-6 rounded-full border shadow-md bg-background z-10",
+          "md:bottom-12 md:left-0 md:translate-x-1/2",
+          "bottom-full right-0 -translate-y-1/2 translate-x-1/2"
+        )}
       >
         {isCollapsed ? <ChevronRight className="h-3 w-3" /> : <ChevronLeft className="h-3 w-3" />}
       </Button>

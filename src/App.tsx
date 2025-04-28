@@ -14,42 +14,29 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { 
-  Info, 
-  Eraser, 
-  Save, 
-  Download, 
-  Undo, 
+import {
+  Eraser,
+  Undo,
   Redo,
-  Github,
   Loader2,
-  ArrowUpRight
+  Menu,
+  X,
+  Github
 } from 'lucide-react';
 import { SvgItem } from './types';
-import { 
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
-import { 
-  APP_VERSION, 
-  GITHUB_URL,
-  CENTRAL_GO_URL,
-  BEIAN_CONFIG, 
-  HELP_CONTENT, 
-  UPDATE_LOG, 
+import {
+  HELP_CONTENT,
+  UPDATE_LOG,
   APP_NAME,
   LICENSE_CONTENT,
-  CONTRIBUTION_CONTENT, 
-  PERSONAL_URL,
-  CENTRAL_GO_LOGO_PATH,
-  PERSONAL_LOGO_PATH
+  CONTRIBUTION_CONTENT,
+  APP_VERSION,
+  GITHUB_URL,
+  BEIAN_CONFIG
 } from './config';
+import { AppMenuItems } from '@/components/AppMenuItems';
 // import { MDXProvider } from '@mdx-js/react';
 import ReactMarkdown from 'react-markdown';
 import { saveCanvasItems, loadCanvasItems } from '@/utils/storageUtils';
@@ -65,7 +52,8 @@ export default function App() {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [canUndo, setCanUndo] = useState(false);
   const [canRedo, setCanRedo] = useState(false);
-  
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
   // 监听canvasItems变化并保存到IndexedDB
   useEffect(() => {
     if (!isLoading) { // 只在加载完成后保存数据
@@ -84,15 +72,15 @@ export default function App() {
         const buffer = await loadFonts();
         if (buffer) {
           setFontBuffer(buffer);
-        // 加载完字体后，尝试从IndexedDB恢复数据
-        try {
-          const items = await loadCanvasItems();
-          if (items.length > 0) {
-            setCanvasItems(items);
+          // 加载完字体后，尝试从IndexedDB恢复数据
+          try {
+            const items = await loadCanvasItems();
+            if (items.length > 0) {
+              setCanvasItems(items);
+            }
+          } catch (error) {
+            console.error('从IndexedDB加载数据失败:', error);
           }
-        } catch (error) {
-          console.error('从IndexedDB加载数据失败:', error);
-        }
         }
       } catch (error) {
         console.error("加载字体失败", error);
@@ -102,16 +90,16 @@ export default function App() {
     }
     loadFontData();
   }, []);
-  
+
   // 清空画板
   const handleClear = () => {
     if (canvasItems.length === 0) return;
-    
+
     if (confirm('确定要清空画板吗？')) {
       setCanvasItems([]);
     }
   };
-  
+
   // 显示帮助
   const showHelp = () => {
     setIsHelpOpen(true);
@@ -123,12 +111,12 @@ export default function App() {
       alert('字体尚未加载完成，请稍后再试');
       return;
     }
-    
+
     if (canvasItems.length === 0) {
       alert('画板中没有可导出的导向标志');
       return;
     }
-    
+
     await exportAsJPG(canvasItems);
   };
 
@@ -138,19 +126,19 @@ export default function App() {
       alert('字体尚未加载完成，请稍后再试');
       return;
     }
-    
+
     if (canvasItems.length === 0) {
       alert('画板中没有可导出的导向标志');
       return;
     }
-    
+
     await exportAsSVG(canvasItems, fontBuffer);
   };
 
   // 添加项目到画布
   // 添加项目到画布
   const handleAddItem = useCallback((
-    file: string, 
+    file: string,
     customUrl?: string,
     config?: {
       customText?: {
@@ -189,7 +177,7 @@ export default function App() {
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      link.download = `导向标志配置_${new Date().toISOString().slice(0,10)}.json`;
+      link.download = `导向标志配置_${new Date().toISOString().slice(0, 10)}.json`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -208,7 +196,7 @@ export default function App() {
     input.onchange = async (e) => {
       const file = (e.target as HTMLInputElement).files?.[0];
       if (!file) return;
-      
+
       try {
         const text = await file.text();
         const newItems = await importCanvasConfig(text);
@@ -225,116 +213,89 @@ export default function App() {
   const toggleSidebar = () => {
     setIsSidebarCollapsed(!isSidebarCollapsed);
   };
-  
+
   return (
-    <div className="flex flex-col h-screen bg-background">
+    <div className="flex flex-col h-screen bg-background relative overflow-hidden">
+      {/* 移动端菜单 */}
+      <div className={`fixed inset-0 bg-background/80 backdrop-blur-sm z-50 md:hidden ${isMobileMenuOpen ? 'block' : 'hidden'}`}>
+        <div className="fixed right-0 top-0 h-full w-[280px] bg-background border-l">
+          <div className="flex flex-col h-full">
+            <div className="flex items-center justify-between p-4 border-b">
+              <h2 className="font-semibold">菜单</h2>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                <X className="h-5 w-5" />
+              </Button>
+            </div>
+            <div className="flex-1 overflow-auto p-4">
+              <AppMenuItems
+                onShowHelp={showHelp}
+                onExportConfig={handleExportConfig}
+                onImportConfig={handleImportConfig}
+                onExportJpg={handleExportJpg}
+                onExportSvg={handleExportSvg}
+                onShowLicense={() => setIsLicenseOpen(true)}
+                onShowContribution={() => setIsContributionOpen(true)}
+                variant="mobile"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* 顶部导航栏 */}
       <header className="border-b bg-background h-14 flex items-center px-4 justify-between sticky top-0 z-10">
         <div className="flex items-center gap-2">
-          {/* <Button variant="ghost" size="icon" className="text-muted-foreground">
-            <Menu className="h-5 w-5" />
-          </Button> */}
           <h1 className="text-xl font-bold text-foreground flex items-center gap-2">
             {APP_NAME}
             <Badge variant="secondary" className="ml-1 font-normal">Beta</Badge>
           </h1>
         </div>
-        
-        <div className="flex items-center gap-2">
-          <Button 
-            variant="outline" 
-            size="sm" 
-            asChild
-          >
-            <a href={CENTRAL_GO_URL} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1">
-              <img src={CENTRAL_GO_LOGO_PATH} alt="Logo" className="h-4 w-4" />
-              Central Go
-              <ArrowUpRight className="h-4 w-4" />
-            </a>
-          </Button>
 
-          <Button 
-            variant="outline" 
-            size="sm" 
-            asChild
-          >
-            <a href={PERSONAL_URL} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1">
-              <img src={PERSONAL_LOGO_PATH} alt="Logo" className="h-4 w-4" />
-              Ryan.G
-              <ArrowUpRight className="h-4 w-4" />
-            </a>
-          </Button>
-          
-          <Button variant="outline" size="sm" onClick={showHelp} className="flex items-center gap-1">
-            <Info className="h-4 w-4" /> 帮助
-          </Button>
-          
-          <Separator orientation="vertical" className="h-6" />
-          
-          <Button 
-            variant="outline"
-            size="sm"
-            onClick={handleExportConfig}
-            className="flex items-center gap-1"
-          >
-            <Save className="h-4 w-4" />
-            导出配置
-          </Button>
-
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleImportConfig}
-            className="flex items-center gap-1"
-          >
-            <Download className="h-4 w-4" />
-            导入配置
-          </Button>
-
-          <Separator orientation="vertical" className="h-6" />
-          
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button size="sm">
-                <Download className="h-4 w-4 mr-1" />
-                导出图片
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>导出选项</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={handleExportJpg} className="flex items-center gap-2">
-                <Save className="h-4 w-4" />
-                导出为JPG
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={handleExportSvg} className="flex items-center gap-2">
-                <Download className="h-4 w-4" />
-                导出SVG
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="text-muted-foreground md:hidden"
+          onClick={() => setIsMobileMenuOpen(true)}
+        >
+          <Menu className="h-5 w-5" />
+        </Button>
+        <div className="hidden md:flex items-center gap-2">
+          <AppMenuItems
+            onShowHelp={showHelp}
+            onExportConfig={handleExportConfig}
+            onImportConfig={handleImportConfig}
+            onExportJpg={handleExportJpg}
+            onExportSvg={handleExportSvg}
+            onShowLicense={() => setIsLicenseOpen(true)}
+            onShowContribution={() => setIsContributionOpen(true)}
+            variant="desktop"
+          />
         </div>
       </header>
-      
+
       {/* 主内容区 */}
-      <div className="flex flex-1 overflow-hidden">
-        {/* 左侧工具栏 */}
-        <div className="flex h-full">
-          <Toolbar 
+      <div className="flex md:flex-row flex-col flex-1 overflow-hidden">
+        {/* 移动端时工具栏在底部，PC端在左侧 */}
+        <div className="md:flex md:h-full order-last md:order-first overflow-x-auto md:overflow-x-visible">
+          <Toolbar
             onAddItem={handleAddItem}
             isCollapsed={isSidebarCollapsed}
             onToggleCollapse={toggleSidebar}
           />
         </div>
-        
-        {/* 右侧工作区 */}
-        <div className="flex-1 overflow-hidden flex flex-col">
+
+        {/* 工作区 */}
+        <div className="flex-1 overflow-hidden flex flex-col order-first md:order-last">
           {/* 工具栏 */}
           <div className="flex items-center justify-between border-b p-2">
             <div className="flex items-center gap-2">
-              <Button 
-                variant="ghost" 
-                size="sm" 
+              <Button
+                variant="ghost"
+                size="sm"
                 disabled={!canUndo}
                 className="text-muted-foreground flex gap-1"
                 onClick={() => canvasRef.current?.undo()}
@@ -342,9 +303,9 @@ export default function App() {
                 <Undo className="h-4 w-4" />
                 撤销
               </Button>
-              <Button 
-                variant="ghost" 
-                size="sm" 
+              <Button
+                variant="ghost"
+                size="sm"
                 disabled={!canRedo}
                 className="text-muted-foreground flex gap-1"
                 onClick={() => canvasRef.current?.redo()}
@@ -353,8 +314,12 @@ export default function App() {
                 重做
               </Button>
               <Separator orientation="vertical" className="h-6" />
-              <Button 
-                variant="destructive" 
+              
+            </div>
+
+            <div className="text-xs text-muted-foreground">
+            <Button
+                variant="ghost"
                 size="sm"
                 onClick={handleClear}
                 disabled={canvasItems.length === 0}
@@ -363,12 +328,8 @@ export default function App() {
                 <Eraser className="h-4 w-4" /> 清空画板
               </Button>
             </div>
-            
-            <div className="text-xs text-muted-foreground">
-              {/* 最后更新：{new Date().toLocaleDateString('zh-CN')} */}
-            </div>
           </div>
-          
+
           {/* 画布区域 */}
           <div className="flex-1 p-8 h-full relative">
             {isLoading ? (
@@ -380,9 +341,9 @@ export default function App() {
               <div className="max-w-6xl mx-auto h-full flex flex-col justify-center items-center">
 
                 <div className="absolute inset-0 bg-muted pointer-events-none" />
-                
+
                 {/* 画布 */}
-                <div 
+                <div
                   className="absolute inset-0 pointer-events-none"
                   style={{
                     backgroundImage: `radial-gradient(circle at 1px 1px, #00000023 1px, transparent 0)`,
@@ -406,9 +367,9 @@ export default function App() {
           </div>
         </div>
       </div>
-      
-      {/* 底部状态栏 */}
-      <footer className="border-t py-2 px-4 bg-muted/30 text-xs text-muted-foreground flex items-center justify-between">
+
+      {/* 底部状态栏 - 仅在PC端显示 */}
+      <footer className="border-t py-2 px-4 bg-muted/30 text-xs text-muted-foreground md:flex items-center justify-between hidden">
         <div className="flex items-center">
           <span className="mr-2">{BEIAN_CONFIG.copyright}</span>
           <Button variant="ghost" size="sm" onClick={() => setIsLicenseOpen(true)} className="text-xs flex items-center gap-1 !py-0 -my-2">
@@ -427,14 +388,14 @@ export default function App() {
             {BEIAN_CONFIG.police.text}
           </a> */}
         </div>
-        
+
         <div className="flex items-center gap-2">
           <Button variant="ghost" size="sm" onClick={() => setIsContributionOpen(true)} className="text-xs flex items-center gap-1 !py-0 -my-2">
             贡献指南
           </Button>
-          <a 
-            href={GITHUB_URL} 
-            target="_blank" 
+          <a
+            href={GITHUB_URL}
+            target="_blank"
             rel="noopener noreferrer"
             className="text-muted-foreground hover:text-foreground transition-colors inline-flex items-center gap-1"
           >
@@ -448,8 +409,8 @@ export default function App() {
       <AlertDialog open={isHelpOpen} onOpenChange={setIsHelpOpen}>
         <AlertDialogContent className="max-w-md">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-xl">使用帮助</AlertDialogTitle>
-            <AlertDialogDescription>
+            <AlertDialogTitle className="text-xl text-start">使用帮助</AlertDialogTitle>
+            <AlertDialogDescription className="text-start">
               <div className="prose prose-sm dark:prose-invert prose-headings:mb-2 prose-p:my-1 prose-ul:my-1 prose-li:my-0 max-w-none">
                 <ReactMarkdown>
                   {HELP_CONTENT}

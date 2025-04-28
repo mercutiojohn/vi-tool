@@ -9,6 +9,7 @@ import { getDynamicSpacing } from '@/utils/spacingRules';
 import { handleDragOver, handleDrop } from '@/utils/dragUtils';
 import { cn } from '@/lib/utils';
 import { generateTextSubSVG, generateTextSVG, generateColoredSVG } from '@/utils/svgGeneratorUtils';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface CanvasProps {
   items?: SvgItem[];
@@ -43,6 +44,8 @@ const Canvas = forwardRef<CanvasRef, CanvasProps>(({
   const [editingItem, setEditingItem] = useState<SvgItem | null>(null);
   const canvasRef = useRef<HTMLDivElement>(null);
   const [entered, setEntered] = useState(false);
+
+  const isMobile = useIsMobile()
 
   // 同步状态和历史记录
   useEffect(() => {
@@ -248,7 +251,8 @@ const Canvas = forwardRef<CanvasRef, CanvasProps>(({
         )}
         style={{
           scrollbarWidth: 'thin',
-          scrollbarColor: 'rgba(255,255,255,0.3) transparent'
+          scrollbarColor: 'rgba(255,255,255,0.3) transparent',
+          zoom: isMobile ? 0.5 : 1,
         }}
         onDragOver={(e) => {
           handleDragOver(e, draggingItem, items, canvasRef as React.RefObject<HTMLDivElement>, updateItems);
@@ -325,7 +329,13 @@ const Canvas = forwardRef<CanvasRef, CanvasProps>(({
       </div>
 
       <div className="p-2 rounded-lg mt-4 text-sm text-muted-foreground text-end">
-        拖拽调整顺序；右键单击可进行更多操作
+        拖拽调整顺序{
+          isMobile ?
+            // '；点击元素可进行更多操作'
+            ''
+            :
+            '；右键单击可进行更多操作'
+        }
       </div>
 
       {/* Text Dialog */}
