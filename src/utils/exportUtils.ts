@@ -92,7 +92,7 @@ export async function exportAsJPG(items: SvgItem[]) {
 
   // 生成下载
   const url = tempCanvas.toDataURL('image/jpeg', 1.0);
-  downloadFile(url, EXPORT_FILENAME.JPG);
+  downloadFile(url, EXPORT_FILENAME.JPG(new Date().toISOString().slice(0, 10)));
 }
 
 export async function exportAsSVG(items: SvgItem[], fontBuffer: ArrayBuffer) {

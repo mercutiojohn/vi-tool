@@ -267,14 +267,14 @@ const Canvas = forwardRef<CanvasRef, CanvasProps>(({
                 onMoveRight={() => moveItem(item.id, 'right')}
                 onDuplicate={() => duplicateItem(item.id)}
                 onRemove={() => removeItem(item.id)}
-                onEditText={() => {
+                onEditText={item.file.startsWith('text@') || item.file.startsWith('sub@') ? () => {
                   setEditingItem(item);
                   setShowTextDialog(true);
-                }}
-                onEditColor={() => {
+                } : undefined}
+                onEditColor={item.file.startsWith('sub@') || item.file.startsWith('cls@') || item.file.startsWith('clss@') ? () => {
                   setEditingItem(item);
                   setShowColorDialog(true);
-                }}
+                } : undefined}
                 canMoveLeft={index > 0}
                 canMoveRight={index < items.length - 1}
                 onItemClick={() => setActiveItem(item.id === activeItem?.id ? null : item)}
