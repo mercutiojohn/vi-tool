@@ -3,9 +3,12 @@ import { SvgItem } from '@/types';
 import { useHotkeys } from 'react-hotkeys-hook';
 import CanvasItem from './CanvasItem';
 import StepContextMenu from '../ContextMenu';
+import TextDialog from '../dialog/TextDialog';
+import ColorDialog from '../dialog/ColorDialog';
 import { getDynamicSpacing } from '@/utils/spacingRules';
 import { handleDragOver, handleDrop } from '@/utils/dragUtils';
 import { cn } from '@/lib/utils';
+import { generateTextSubSVG, generateTextSVG, generateColoredSVG } from '@/utils/svgGeneratorUtils';
 
 interface CanvasProps {
   items?: SvgItem[];
@@ -35,6 +38,9 @@ const Canvas = forwardRef<CanvasRef, CanvasProps>(({
   const [draggingItem, setDraggingItem] = useState<string | null>(null);
   const [history, setHistory] = useState<SvgItem[][]>([]);
   const [historyIndex, setHistoryIndex] = useState<number>(-1);
+  const [showTextDialog, setShowTextDialog] = useState(false);
+  const [showColorDialog, setShowColorDialog] = useState(false);
+  const [editingItem, setEditingItem] = useState<SvgItem | null>(null);
   const canvasRef = useRef<HTMLDivElement>(null);
   
   // 同步状态和历史记录
@@ -261,6 +267,14 @@ const Canvas = forwardRef<CanvasRef, CanvasProps>(({
                 onMoveRight={() => moveItem(item.id, 'right')}
                 onDuplicate={() => duplicateItem(item.id)}
                 onRemove={() => removeItem(item.id)}
+                onEditText={() => {
+                  setEditingItem(item);
+                  setShowTextDialog(true);
+                }}
+                onEditColor={() => {
+                  setEditingItem(item);
+                  setShowColorDialog(true);
+                }}
                 canMoveLeft={index > 0}
                 canMoveRight={index < items.length - 1}
                 onItemClick={() => setActiveItem(item.id === activeItem?.id ? null : item)}
@@ -284,6 +298,81 @@ const Canvas = forwardRef<CanvasRef, CanvasProps>(({
       <div className="p-2 rounded-lg mt-4 text-sm text-muted-foreground text-end">
         拖拽调整顺序；右键单击可进行更多操作
       </div>
+
+      {/* Text Dialog */}
+      {showTextDialog && editingItem && (
+        <TextDialog
+          onClose={() => {
+            setShowTextDialog(false);
+            setEditingItem(null);
+          }}
+          onConfirm={async (cnText, enText, alignment, hasColorBand, colorBandColor) => {
+            try {
+              // 获取字体
+              const fontResponse = await fetch('/SourceHanSans.woff2');
+              const fontBuffer = await fontResponse.arrayBuffer();
+              
+              // 生成新的SVG
+              let result;
+              if (hasColorBand) {
+                result = await generateTextSubSVG(cnText, enText, alignment, colorBandColor || '#001D31', fontBuffer);
+              } else {
+                result = await generateTextSVG(cnText, enText, alignment, fontBuffer);
+              }
+              
+              const newItems = items.map(item => 
+                item.id === editingItem.id ? {
+                  ...item,
+                  customText: {
+                    cn: cnText,
+                    en: enText,
+                    alignment: alignment as 'start' | 'middle' | 'end'
+                  },
+                  hasColorBand,
+                  colorBandColor,
+                  customUrl: result.url
+                } : item
+              );
+              updateItems(newItems);
+            } catch (error) {
+              console.error('生成SVG失败:', error);
+            }
+            setShowTextDialog(false);
+            setEditingItem(null);
+          }}
+          mode={editingItem.colorBandColor ? 'colorBand' : 'normal'}
+          initialValues={editingItem.customText}
+          initialColorBandColor={editingItem.colorBandColor}
+        />
+      )}
+
+      {/* Color Dialog */}
+      {showColorDialog && editingItem && (
+        <ColorDialog
+          onClose={() => {
+            setShowColorDialog(false);
+            setEditingItem(null);
+          }}
+          onConfirm={async (color) => {
+            try {
+              const result = await generateColoredSVG(editingItem.file, color);
+              const newItems = items.map(item =>
+                item.id === editingItem.id ? {
+                  ...item,
+                  customColor: color,
+                  customUrl: result.url
+                } : item
+              );
+              updateItems(newItems);
+            } catch (error) {
+              console.error('生成着色SVG失败:', error);
+            }
+            setShowColorDialog(false);
+            setEditingItem(null);
+          }}
+          initialColor={editingItem.customColor}
+        />
+      )}
     </div>
   );
 });

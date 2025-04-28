@@ -25,7 +25,16 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
 
 interface ToolbarProps {
-  onAddItem: (file: string, customUrl?: string) => void;
+  onAddItem: (file: string, customUrl?: string, config?: {
+    customText?: {
+      cn: string;
+      en: string;
+      alignment: 'start' | 'middle' | 'end';
+    };
+    hasColorBand?: boolean;
+    colorBandColor?: string;
+    customColor?: string;
+  }) => void;
   isCollapsed?: boolean;
   onToggleCollapse?: () => void;
 }
@@ -226,11 +235,26 @@ export default function Toolbar({ onAddItem, isCollapsed = false, onToggleCollap
                   colorBandColor, 
                   fontBuffer
                 );
-                onAddItem(result.fileName, result.url);
+                onAddItem(result.fileName, result.url, {
+                  customText: {
+                    cn: cnText,
+                    en: enText,
+                    alignment: alignment as 'start' | 'middle' | 'end'
+                  },
+                  hasColorBand: true,
+                  colorBandColor
+                });
               } else if (!hasColorBand) {
                 // 生成普通文本
                 const result = await generateTextSVG(cnText, enText, alignment, fontBuffer);
-                onAddItem(result.fileName, result.url);
+                onAddItem(result.fileName, result.url, {
+                  customText: {
+                    cn: cnText,
+                    en: enText,
+                    alignment: alignment as 'start' | 'middle' | 'end'
+                  },
+                  hasColorBand: false
+                });
               }
             } catch (error) {
               console.error('生成文本失败:', error);
@@ -249,7 +273,10 @@ export default function Toolbar({ onAddItem, isCollapsed = false, onToggleCollap
             try {
               // 生成色带SVG
               const result = await generateSubSVG(alignment, color);
-              onAddItem(result.fileName, result.url);
+              onAddItem(result.fileName, result.url, {
+                hasColorBand: true,
+                colorBandColor: color
+              });
             } catch (error) {
               console.error('生成失败:', error);
               alert('生成色带失败，请稍后再试');
@@ -267,7 +294,9 @@ export default function Toolbar({ onAddItem, isCollapsed = false, onToggleCollap
             try {
               // 生成着色SVG
               const result = await generateColoredSVG(currentColorFile, color);
-              onAddItem(result.fileName, result.url);
+              onAddItem(result.fileName, result.url, {
+                customColor: color
+              });
             } catch (error) {
               console.error('处理失败:', error);
               alert('文件加载失败，请检查网络连接');

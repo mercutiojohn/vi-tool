@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useColorEditor } from '@/hooks/useColorEditor';
 import {
   Dialog,
   DialogContent,
@@ -12,15 +12,20 @@ import { ColorPicker } from '@/components/ui/color-picker';
 interface ColorDialogProps {
   onClose: () => void;
   onConfirm: (color: string) => void;
-  // originFile: string;
+  initialColor?: string;
 }
 
 export default function ColorDialog({
   onClose,
   onConfirm,
-  // originFile
+  initialColor
 }: ColorDialogProps) {
-  const [selectedColor, setSelectedColor] = useState('#001D31');
+  const {
+    selectedColor,
+    setSelectedColor
+  } = useColorEditor({
+    initialColor
+  });
 
   const handleConfirm = () => {
     onConfirm(selectedColor);

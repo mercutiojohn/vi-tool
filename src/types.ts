@@ -8,6 +8,14 @@ export interface SvgItem {
   id: string;
   originalSvg?: string;
   customUrl?: string;
+  customText?: {
+    cn: string;
+    en: string;
+    alignment: 'start' | 'middle' | 'end';
+  };
+  customColor?: string;
+  hasColorBand?: boolean;
+  colorBandColor?: string;
 }
 
 export interface CanvasItemProps {

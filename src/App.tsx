@@ -146,11 +146,29 @@ export default function App() {
 
   // 添加项目到画布
   // 添加项目到画布
-  const handleAddItem = useCallback((file: string, customUrl?: string): string => {
-    console.log('App: 添加新项目:', { file, customUrl });
+  const handleAddItem = useCallback((
+    file: string, 
+    customUrl?: string,
+    config?: {
+      customText?: {
+        cn: string;
+        en: string;
+        alignment: 'start' | 'middle' | 'end';
+      };
+      hasColorBand?: boolean;
+      colorBandColor?: string;
+      customColor?: string;
+    }
+  ): string => {
+    console.log('App: 添加新项目:', { file, customUrl, config });
     // 创建新项目
     const id = Date.now() + Math.random().toString(36).substr(2, 9);
-    const newItem: SvgItem = { id, file, customUrl };
+    const newItem: SvgItem = {
+      id,
+      file,
+      customUrl,
+      ...config
+    };
     // 使用newItem的引用更新状态
     setCanvasItems(prev => {
       const newItems = [...prev, newItem];

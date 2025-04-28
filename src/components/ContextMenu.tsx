@@ -6,7 +6,7 @@ import {
   ContextMenuTrigger,
   ContextMenuSeparator
 } from "@/components/ui/context-menu";
-import { MoveLeft, MoveRight, Copy, Trash2 } from "lucide-react";
+import { MoveLeft, MoveRight, Copy, Trash2, Type, Palette } from "lucide-react";
 
 interface StepContextMenuProps {
   children: React.ReactNode;
@@ -14,6 +14,8 @@ interface StepContextMenuProps {
   onMoveRight: () => void;
   onDuplicate: () => void;
   onRemove: () => void;
+  onEditText?: () => void;
+  onEditColor?: () => void;
   canMoveLeft: boolean;
   canMoveRight: boolean;
   onItemClick?: () => void; // 添加原有的点击处理
@@ -25,6 +27,8 @@ export default function StepContextMenu({
   onMoveRight,
   onDuplicate,
   onRemove,
+  onEditText,
+  onEditColor,
   canMoveLeft,
   canMoveRight,
   onItemClick
@@ -88,6 +92,20 @@ export default function StepContextMenu({
             <Copy className="mr-2 h-4 w-4" />
             复制
           </ContextMenuItem>
+          <ContextMenuSeparator />
+          {onEditText && (
+            <ContextMenuItem onClick={onEditText}>
+              <Type className="mr-2 h-4 w-4" />
+              编辑文本
+            </ContextMenuItem>
+          )}
+          {onEditColor && (
+            <ContextMenuItem onClick={onEditColor}>
+              <Palette className="mr-2 h-4 w-4" />
+              编辑颜色
+            </ContextMenuItem>
+          )}
+          <ContextMenuSeparator />
           <ContextMenuItem onClick={onRemove} variant="destructive">
             <Trash2 className="mr-2 h-4 w-4" />
             删除
