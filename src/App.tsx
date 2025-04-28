@@ -4,6 +4,7 @@ import Canvas, { CanvasRef } from '@/components/canvas/Canvas';
 import Toolbar from '@/components/toolbar/Toolbar';
 import { loadFonts } from '@/utils/fontUtils';
 import { exportAsJPG, exportAsSVG } from '@/utils/exportUtils';
+import { exportCanvasConfig, importCanvasConfig } from '@/utils/configUtils';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -178,6 +179,46 @@ export default function App() {
     return id;
   }, []);
 
+  // 导出配置
+  const handleExportConfig = async () => {
+    try {
+      const config = await exportCanvasConfig(canvasItems);
+      const blob = new Blob([config], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `导向标志配置_${new Date().toISOString().slice(0,10)}.json`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('导出配置失败:', error);
+      alert('导出配置失败，请稍后重试');
+    }
+  };
+
+  // 导入配置
+  const handleImportConfig = () => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+    input.onchange = async (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0];
+      if (!file) return;
+      
+      try {
+        const text = await file.text();
+        const newItems = await importCanvasConfig(text);
+        setCanvasItems(newItems);
+      } catch (error) {
+        console.error('导入配置失败:', error);
+        alert('导入配置失败，请确保文件格式正确');
+      }
+    };
+    input.click();
+  };
+
   // 切换侧边栏折叠状态
   const toggleSidebar = () => {
     setIsSidebarCollapsed(!isSidebarCollapsed);
@@ -226,11 +267,33 @@ export default function App() {
           
           <Separator orientation="vertical" className="h-6" />
           
+          <Button 
+            variant="outline"
+            size="sm"
+            onClick={handleExportConfig}
+            className="flex items-center gap-1"
+          >
+            <Save className="h-4 w-4" />
+            导出配置
+          </Button>
+
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleImportConfig}
+            className="flex items-center gap-1"
+          >
+            <Download className="h-4 w-4" />
+            导入配置
+          </Button>
+
+          <Separator orientation="vertical" className="h-6" />
+          
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button size="sm">
                 <Download className="h-4 w-4 mr-1" />
-                导出
+                导出图片
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
@@ -242,7 +305,7 @@ export default function App() {
               </DropdownMenuItem>
               <DropdownMenuItem onClick={handleExportSvg} className="flex items-center gap-2">
                 <Download className="h-4 w-4" />
-                下载SVG
+                导出SVG
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
