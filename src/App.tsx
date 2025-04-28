@@ -215,7 +215,7 @@ export default function App() {
   };
 
   return (
-    <div className="flex flex-col h-screen bg-background relative overflow-hidden">
+    <div className="flex flex-col h-screen bg-background relative overflow-hidden select-none">
       {/* 移动端菜单 */}
       <div className={`fixed inset-0 bg-background/80 backdrop-blur-sm z-50 md:hidden ${isMobileMenuOpen ? 'block' : 'hidden'}`}>
         <div className="fixed right-0 top-0 h-full w-[280px] bg-background border-l">
