@@ -27,11 +27,11 @@ export interface CanvasRef {
 }
 
 const Canvas = forwardRef<CanvasRef, CanvasProps>(({
-  items: externalItems, 
-  onItemsChange, 
+  items: externalItems,
+  onItemsChange,
   onAddItem,
   onHistoryChange,
-  className 
+  className
 }, ref) => {
   const [items, setItems] = useState<SvgItem[]>(externalItems || []);
   const [activeItem, setActiveItem] = useState<SvgItem | null>(null);
@@ -42,7 +42,8 @@ const Canvas = forwardRef<CanvasRef, CanvasProps>(({
   const [showColorDialog, setShowColorDialog] = useState(false);
   const [editingItem, setEditingItem] = useState<SvgItem | null>(null);
   const canvasRef = useRef<HTMLDivElement>(null);
-  
+  const [entered, setEntered] = useState(false);
+
   // 同步状态和历史记录
   useEffect(() => {
     if (!externalItems) {
@@ -91,25 +92,25 @@ const Canvas = forwardRef<CanvasRef, CanvasProps>(({
   useEffect(() => {
     console.log('Canvas: 内部items发生变化:', items);
   }, [items]);
-  
+
   // 更新items时通知父组件并记录历史
   const updateItems = useCallback((newItems: SvgItem[]) => {
     console.log('Canvas: 准备更新items:', newItems);
-    
+
     // 添加新的历史记录
     const newHistory = history.slice(0, historyIndex + 1);
     newHistory.push(newItems);
-    
+
     console.log('更新历史记录:', {
       oldIndex: historyIndex,
       newIndex: newHistory.length - 1,
       historyLength: newHistory.length
     });
-    
+
     setHistory(newHistory);
     setHistoryIndex(newHistory.length - 1);
     setItems(newItems);
-    
+
     if (onItemsChange) {
       console.log('Canvas: 通知父组件items变化');
       onItemsChange(newItems);
@@ -162,7 +163,7 @@ const Canvas = forwardRef<CanvasRef, CanvasProps>(({
     console.log('触发重做快捷键');
     redo();
   }, { enableOnFormTags: true });
-  
+
   // 添加新项目的处理函数
   const handleAddItem = (file: string, customUrl?: string) => {
     console.log('Canvas: 添加新项目:', file, customUrl);
@@ -170,56 +171,56 @@ const Canvas = forwardRef<CanvasRef, CanvasProps>(({
       onAddItem(file, customUrl);
     }
   };
-  
+
   // 移动项目
   const moveItem = (id: string, direction: 'left' | 'right') => {
     const newItems = [...items];
     const index = newItems.findIndex(item => item.id === id);
-    
+
     if (direction === 'left' && index > 0) {
       [newItems[index], newItems[index - 1]] = [newItems[index - 1], newItems[index]];
     } else if (direction === 'right' && index < newItems.length - 1) {
       [newItems[index], newItems[index + 1]] = [newItems[index + 1], newItems[index]];
     }
-    
+
     updateItems(newItems);
   };
-  
+
   // 复制项目
   const duplicateItem = (id: string) => {
     const itemToDuplicate = items.find(item => item.id === id);
     if (!itemToDuplicate) return;
-    
+
     const newItem: SvgItem = {
       ...itemToDuplicate,
       id: Date.now() + Math.random().toString(36).substr(2, 9)
     };
-    
+
     const index = items.findIndex(item => item.id === id);
     const newItems = [...items];
     newItems.splice(index + 1, 0, newItem);
-    
+
     updateItems(newItems);
   };
-  
+
   // 删除项目
   const removeItem = (id: string) => {
     const newItems = items.filter(item => item.id !== id);
     updateItems(newItems);
   };
-  
+
   // 使用getDynamicSpacing获取元素间距
   const getItemSpacing = (index: number): number => {
     if (index >= items.length - 1) return 0;
-    
+
     const current = items[index];
     const next = items[index + 1];
     const currentType = current.file.split('@')[0];
     const nextType = next.file.split('@')[0];
-    
+
     return getDynamicSpacing(current.file, next.file, currentType, nextType, DEFAULT_SPACING);
   };
-  
+
   // 将spacing转换为合适的CSS类名或样式
   const getSpacingStyle = (index: number): { marginRight: string } => {
     const spacing = getItemSpacing(index);
@@ -235,62 +236,90 @@ const Canvas = forwardRef<CanvasRef, CanvasProps>(({
   const handleDragEnd = () => {
     setDraggingItem(null);
   };
-  
+
   return (
-    <div className={cn("w-full mx-auto", className)}>
-      <div 
+    <div className={cn("w-full mx-auto flex flex-col justify-center items-center", className)}>
+      <div
         ref={canvasRef}
-        className={`h-[${CANVAS_HEIGHT}px] bg-[#001D31] rounded-lg transition-all px-[25px] border-2 border-dashed border-border/50 overflow-x-auto overflow-y-hidden ${items.length === 0 ? 'min-w-[200px]' : ''}`}
-        style={{ 
+        className={cn(
+          `h-[${CANVAS_HEIGHT}px] bg-[#001D31] rounded-sm transition-all px-[25px] overflow-x-auto overflow-y-hidden max-w-full duration-300`,
+          // items.length === 0 ? 'min-w-[200px]' : '',
+          // entered ? "bg-white" : "",
+        )}
+        style={{
           scrollbarWidth: 'thin',
           scrollbarColor: 'rgba(255,255,255,0.3) transparent'
         }}
-        onDragOver={(e) => handleDragOver(e, draggingItem, items, canvasRef as React.RefObject<HTMLDivElement>, updateItems)}
-        onDrop={(e) => handleDrop(e, items, canvasRef as React.RefObject<HTMLDivElement>, handleAddItem, updateItems)}
+        onDragOver={(e) => {
+          handleDragOver(e, draggingItem, items, canvasRef as React.RefObject<HTMLDivElement>, updateItems);
+          setEntered(true);
+        }}
+        onDragExit={() => {
+          setEntered(false);
+        }}
+        onDragEnd={() => {
+          setEntered(false);
+        }}
+        onDragLeave={() => {
+          setEntered(false);
+        }}
+        onDrop={(e) => {
+          handleDrop(e, items, canvasRef as React.RefObject<HTMLDivElement>, handleAddItem, updateItems);
+          setEntered(false);
+        }}
       >
-        <div 
-          className="inline-flex items-center h-full min-w-full"
+        <div
+          className={cn(
+            "inline-flex items-center h-full w-full",
+            items.length === 0 ? "justify-center" : "justify-start"
+          )}
           style={{ flexShrink: 0 }}
         >
           {items.length === 0 ? (
-            // <div className="text-white/50 text-sm w-full text-center">拖拽或点击导向标志添加到此区域</div>
             <div className="w-full text-center text-primary-foreground flex flex-col items-center">
-              {/* <PanelLeft className="h-12 w-12 mb-4 text-muted-foreground/50" /> */}
               <h3 className="text-lg font-medium mb-2">开始创建您的导向标志</h3>
               <p className="max-w-md text-sm">从左侧工具栏拖拽元素到这里，或点击元素添加。点击画布中的元素可以编辑、复制或删除。</p>
             </div>
           ) : (
-            items.map((item, index) => (
-              <StepContextMenu
-                key={item.id}
-                onMoveLeft={() => moveItem(item.id, 'left')}
-                onMoveRight={() => moveItem(item.id, 'right')}
-                onDuplicate={() => duplicateItem(item.id)}
-                onRemove={() => removeItem(item.id)}
-                onEditText={item.file.startsWith('text@') || item.file.startsWith('sub@') ? () => {
-                  setEditingItem(item);
-                  setShowTextDialog(true);
-                } : undefined}
-                onEditColor={item.file.startsWith('sub@') || item.file.startsWith('cls@') || item.file.startsWith('clss@') ? () => {
-                  setEditingItem(item);
-                  setShowColorDialog(true);
-                } : undefined}
-                canMoveLeft={index > 0}
-                canMoveRight={index < items.length - 1}
-                onItemClick={() => setActiveItem(item.id === activeItem?.id ? null : item)}
-              >
-                <CanvasItem
-                  item={item}
-                  isActive={activeItem?.id === item.id}
-                  isDragging={draggingItem === item.id}
-                  onDragStart={() => handleDragStart(item.id)}
-                  onDragEnd={handleDragEnd}
-                  className="canvas-item"
-                  style={getSpacingStyle(index)}
+            <>
+              {items.map((item, index) => (
+                <StepContextMenu
+                  key={item.id}
+                  onMoveLeft={() => moveItem(item.id, 'left')}
+                  onMoveRight={() => moveItem(item.id, 'right')}
+                  onDuplicate={() => duplicateItem(item.id)}
+                  onRemove={() => removeItem(item.id)}
+                  onEditText={item.file.startsWith('text@') || item.file.startsWith('sub@') ? () => {
+                    setEditingItem(item);
+                    setShowTextDialog(true);
+                  } : undefined}
+                  onEditColor={item.file.startsWith('sub@') || item.file.startsWith('cls@') || item.file.startsWith('clss@') ? () => {
+                    setEditingItem(item);
+                    setShowColorDialog(true);
+                  } : undefined}
+                  canMoveLeft={index > 0}
+                  canMoveRight={index < items.length - 1}
                   onItemClick={() => setActiveItem(item.id === activeItem?.id ? null : item)}
-                />
-              </StepContextMenu>
-            ))
+                >
+                  <CanvasItem
+                    item={item}
+                    isActive={activeItem?.id === item.id}
+                    isDragging={draggingItem === item.id}
+                    onDragStart={() => handleDragStart(item.id)}
+                    onDragEnd={handleDragEnd}
+                    className="canvas-item"
+                    style={getSpacingStyle(index)}
+                    onItemClick={() => setActiveItem(item.id === activeItem?.id ? null : item)}
+                  />
+                </StepContextMenu>
+              ))}
+              <div className={cn(
+                "",
+                entered ? "transition-all duration-300 w-50" : "transition-all duration-100 w-0",
+              )} style={{
+                // flexShrink: 0
+              }} />
+            </>
           )}
         </div>
       </div>
@@ -311,7 +340,7 @@ const Canvas = forwardRef<CanvasRef, CanvasProps>(({
               // 获取字体
               const fontResponse = await fetch('/SourceHanSans.woff2');
               const fontBuffer = await fontResponse.arrayBuffer();
-              
+
               // 生成新的SVG
               let result;
               if (hasColorBand) {
@@ -319,8 +348,8 @@ const Canvas = forwardRef<CanvasRef, CanvasProps>(({
               } else {
                 result = await generateTextSVG(cnText, enText, alignment, fontBuffer);
               }
-              
-              const newItems = items.map(item => 
+
+              const newItems = items.map(item =>
                 item.id === editingItem.id ? {
                   ...item,
                   customText: {
