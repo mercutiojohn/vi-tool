@@ -331,8 +331,7 @@ const Canvas = forwardRef<CanvasRef, CanvasProps>(({
       <div className="p-2 rounded-lg mt-4 text-sm text-muted-foreground text-end">
         拖拽调整顺序{
           isMobile ?
-            // '；点击元素可进行更多操作'
-            ''
+            '；长按元素可进行更多操作'
             :
             '；右键单击可进行更多操作'
         }
