@@ -1,11 +1,11 @@
 import { useTextEditor } from '@/hooks/useTextEditor';
 import { useFontLoader } from '@/hooks/useFontLoader';
-import { 
-  Dialog, 
-  DialogContent, 
-  DialogHeader, 
-  DialogTitle, 
-  DialogFooter 
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -26,16 +26,17 @@ interface TextDialogProps {
   initialColorBandColor?: string;
 }
 
-export default function TextDialog({ 
-  onClose, 
-  onConfirm, 
+export default function TextDialog({
+  onClose,
+  onConfirm,
   mode = 'normal',
   initialValues,
   initialColorBandColor
 }: TextDialogProps) {
-  const { fontBuffer,
+  const {
+    fontBuffer,
     //  loading
-     } = useFontLoader();
+  } = useFontLoader();
   const {
     cnText,
     setCnText,
@@ -88,37 +89,37 @@ export default function TextDialog({
   //     </Dialog>
   //   );
   // }
-  
+
   return (
     <Dialog open={true} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>{mode === 'colorBand' ? '色带和文本框' : '文本框'}</DialogTitle>
         </DialogHeader>
-        
+
         <div className="grid gap-4 py-4">
           <div className="grid gap-2">
             <Label htmlFor="cn-input">中文内容</Label>
-            <Input 
-              id="cn-input" 
-              value={cnText} 
-              onChange={(e) => setCnText(e.target.value)} 
+            <Input
+              id="cn-input"
+              value={cnText}
+              onChange={(e) => setCnText(e.target.value)}
             />
           </div>
-          
+
           <div className="grid gap-2">
             <Label htmlFor="en-input">英文内容</Label>
-            <Input 
-              id="en-input" 
-              value={enText} 
-              onChange={(e) => setEnText(e.target.value)} 
+            <Input
+              id="en-input"
+              value={enText}
+              onChange={(e) => setEnText(e.target.value)}
             />
           </div>
-          
+
           <div className="grid gap-2">
             <Label>对齐方式</Label>
-            <RadioGroup 
-              value={alignment} 
+            <RadioGroup
+              value={alignment}
               onValueChange={(value: 'start' | 'middle' | 'end') => setAlignment(value)}
             >
               <div className="flex items-center space-x-2">
@@ -145,7 +146,7 @@ export default function TextDialog({
             />
           )}
         </div>
-        
+
         <DialogFooter>
           <Button variant="ghost" onClick={onClose}>取消</Button>
           <Button onClick={handleConfirm}>确定</Button>
