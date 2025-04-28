@@ -257,6 +257,14 @@ export async function generateTextSVG(
   // 创建Blob
   const blob = new Blob([svgContent], {type: 'image/svg+xml'});
   const url = URL.createObjectURL(blob);
+
+  console.log('生成文本SVG成功:', {
+    cnText,
+    enText,
+    alignment,
+    url,
+    contentLength: svgContent.length
+  });
   
   return {
     fileName: `text@custom-${Date.now()}.svg`,

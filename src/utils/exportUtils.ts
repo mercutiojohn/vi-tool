@@ -164,7 +164,7 @@ export async function exportAsSVG(items: SvgItem[], fontBuffer: ArrayBuffer) {
     Array.from(item.element.children).forEach(child => {
       const clonedNode = child.cloneNode(true) as SVGElement;
       clonedNode.removeAttribute('id');
-      clonedNode.removeAttribute('class');
+      // clonedNode.removeAttribute('class');
       g.appendChild(clonedNode);
     });
 
