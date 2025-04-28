@@ -46,7 +46,9 @@ import {
   APP_NAME,
   LICENSE_CONTENT,
   CONTRIBUTION_CONTENT, 
-  PERSONAL_URL
+  PERSONAL_URL,
+  CENTRAL_GO_LOGO_PATH,
+  PERSONAL_LOGO_PATH
 } from './config';
 // import { MDXProvider } from '@mdx-js/react';
 import ReactMarkdown from 'react-markdown';
@@ -245,7 +247,7 @@ export default function App() {
             asChild
           >
             <a href={CENTRAL_GO_URL} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1">
-              <img src="/centralgo_logo.png" alt="Logo" className="h-4 w-4" />
+              <img src={CENTRAL_GO_LOGO_PATH} alt="Logo" className="h-4 w-4" />
               Central Go
               <ArrowUpRight className="h-4 w-4" />
             </a>
@@ -257,7 +259,7 @@ export default function App() {
             asChild
           >
             <a href={PERSONAL_URL} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1">
-              <img src="/logo.svg" alt="Logo" className="h-4 w-4" />
+              <img src={PERSONAL_LOGO_PATH} alt="Logo" className="h-4 w-4" />
               Ryan.G
               <ArrowUpRight className="h-4 w-4" />
             </a>

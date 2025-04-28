@@ -9,7 +9,9 @@ import App from "./App";
 
 export const GITHUB_URL = "https://github.com/mercutiojohn/vi-tool";
 export const CENTRAL_GO_URL = "https://centralgo.site/vi.html";
+export const CENTRAL_GO_LOGO_PATH = "/centralgo_logo.png";
 export const PERSONAL_URL = "https://yuchengao.work";
+export const PERSONAL_LOGO_PATH = "/logo.svg";
 
 export const APP_NAME = "导向标志生成器";
 
