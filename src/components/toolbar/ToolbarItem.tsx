@@ -11,7 +11,7 @@ export default function ToolbarItem({ file, onClick }: ToolbarItemProps) {
     
     // 设置拖拽时的图像
     const img = new Image();
-    img.src = `./${file}`;
+    img.src = `/${file}`;
     
     // 使用setTimeout解决某些浏览器的渲染问题
     setTimeout(() => {
@@ -36,7 +36,7 @@ export default function ToolbarItem({ file, onClick }: ToolbarItemProps) {
       onDragStart={handleDragStart}
     >
       <img 
-        src={`./${file}`} 
+        src={`/${file}`} 
         alt={file} 
         className="max-h-full max-w-full"
         draggable={false} // 防止图像本身被拖拽

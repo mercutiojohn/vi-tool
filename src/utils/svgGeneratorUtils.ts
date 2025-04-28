@@ -70,7 +70,7 @@ export async function generateSubSVG(alignment: string, color: string): Promise<
 export async function generateColoredSVG(originFile: string, color: string): Promise<{fileName: string, url: string}> {
   try {
     console.log('开始生成着色SVG:', originFile, color);
-    const response = await fetch(`./${originFile}`);
+    const response = await fetch(`/${originFile}`);
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }

@@ -70,7 +70,7 @@ export async function exportAsJPG(items: SvgItem[]) {
   // 第三阶段：绘制元素
   let xPos = 25 * scaleFactor;
   for (let i = 0; i < items.length; i++) {
-    const img = await loadImage(items[i].customUrl || `./public/${items[i].file}`);
+    const img = await loadImage(items[i].customUrl || `/${items[i].file}`);
     if (img) {
       const width = itemWidths[i];
       ctx.drawImage(img, xPos, 0, width, exportHeight);
@@ -217,7 +217,7 @@ function loadImage(src: string): Promise<HTMLImageElement> {
 
 async function fetchSvgContent(file: string): Promise<string | null> {
   try {
-    const response = await fetch(`./public/${file}`);
+    const response = await fetch(`/${file}`);
     return await response.text();
   } catch (error) {
     console.error('获取SVG内容失败:', error);

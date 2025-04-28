@@ -10,10 +10,10 @@ export function arrayBufferToBase64(buffer: ArrayBuffer): string {
 
 export async function loadFonts(): Promise<ArrayBuffer | null> {
   try {
-    const fontResponse = await fetch('./SourceHanSans.woff2');
+    const fontResponse = await fetch('/SourceHanSans.woff2');
     const fontBuffer = await fontResponse.arrayBuffer();
     
-    const font = new FontFace('SourceHanSansSC', `url(./SourceHanSans.woff2)`);
+    const font = new FontFace('SourceHanSansSC', `url(/SourceHanSans.woff2)`);
     await font.load();
     document.fonts.add(font);
     
