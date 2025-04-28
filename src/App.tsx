@@ -245,6 +245,7 @@ export default function App() {
             asChild
           >
             <a href={CENTRAL_GO_URL} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1">
+              <img src="/centralgo_logo.png" alt="Logo" className="h-4 w-4" />
               Central Go
               <ArrowUpRight className="h-4 w-4" />
             </a>
@@ -256,6 +257,7 @@ export default function App() {
             asChild
           >
             <a href={PERSONAL_URL} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1">
+              <img src="/logo.svg" alt="Logo" className="h-4 w-4" />
               Ryan.G
               <ArrowUpRight className="h-4 w-4" />
             </a>

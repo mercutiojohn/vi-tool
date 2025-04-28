@@ -71,7 +71,9 @@ feat ✨：
 - 添加文本和颜色编辑对话框
 - 优化 Canvas 组件
 - 改进 ContextMenu 组件显示逻辑
+`;
 
+export const UPDATE_LOG_PREVIOUS = `
 ## 版本v0.1
 
 更新日期: 2025-04-28
