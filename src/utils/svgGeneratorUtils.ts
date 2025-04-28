@@ -112,33 +112,6 @@ export async function generateColoredSVG(originFile: string, color: string): Pro
       svgText = `<?xml version="1.0" encoding="UTF-8"?>${svgText}`;
     }
     
-    // 确保SVG标签有正确的属性
-    const svgMatch = svgText.match(/<svg[^>]*>/);
-    if (svgMatch) {
-      let svgTag = svgMatch[0];
-      
-      // 添加xmlns属性
-      if (!svgTag.includes('xmlns=')) {
-        svgTag = svgTag.replace('<svg', '<svg xmlns="http://www.w3.org/2000/svg"');
-      }
-      
-      // 确保有width和height属性
-      if (!svgTag.includes('width=')) {
-        svgTag = svgTag.replace('<svg', '<svg width="150"');
-      }
-      if (!svgTag.includes('height=')) {
-        svgTag = svgTag.replace('<svg', '<svg height="150"');
-      }
-      
-      // 确保有viewBox属性
-      if (!svgTag.includes('viewBox=')) {
-        svgTag = svgTag.replace('<svg', '<svg viewBox="0 0 150 150"');
-      }
-      
-      svgText = svgText.replace(/<svg[^>]*>/, svgTag);
-      console.log('更新后的SVG标签:', svgTag);
-    }
-
     // 在生成Blob前使用此函数验证
     if (!validateSvg(svgText)) {
       console.error('生成的SVG无效，可能导致加载失败');
