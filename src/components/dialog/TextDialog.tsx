@@ -91,7 +91,7 @@ export default function TextDialog({
     <Dialog open={true} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>{mode === 'colorBand' ? '添加色带文本' : '添加文本框'}</DialogTitle>
+          <DialogTitle>{mode === 'colorBand' ? '色带和文本框' : '文本框'}</DialogTitle>
         </DialogHeader>
         
         <div className="grid gap-4 py-4">
