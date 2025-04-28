@@ -13,7 +13,7 @@ export const PERSONAL_URL = "https://yuchengao.work";
 
 export const APP_NAME = "导向标志生成器";
 
-export const APP_VERSION  = `v0.1_based-on-NaL-v0.85`;
+export const APP_VERSION  = `v0.2`;
 
 // 备案信息配置
 export const BEIAN_CONFIG = {
@@ -31,9 +31,9 @@ export const BEIAN_CONFIG = {
 
 // 使用帮助内容 - Markdown格式
 export const HELP_CONTENT = `
-1. 从左侧工具栏选择导向标志添加到画板，拖拽即可排序，点击图标打开菜单。
-2. 目前该工具仍为测试版本，部分功能尚未实现，仅供参考体验。
-3. 首次打开时，需要5-10秒进行加载，请耐心等待。
+1. 从左侧工具栏选择导向标志添加到画板；
+2. 拖拽进行排序；
+3. 右键打开菜单，执行编辑操作；
 4. 工具内容与官方运营单位无关，仅供参考。
 `;
 
@@ -57,9 +57,24 @@ export const CONTRIBUTION_CONTENT = `
 `;
 
 export const UPDATE_LOG = `
+
 ## 版本${APP_VERSION}
 
 更新日期: ${new Date().toLocaleDateString()}
+
+fix 🐛：
+- 修复导出 JPG 格式的问题
+
+feat ✨：
+- 增加画布配置导入导出功能
+- 新增自定义文本和颜色修改配置功能
+- 添加文本和颜色编辑对话框
+- 优化 Canvas 组件
+- 改进 ContextMenu 组件显示逻辑
+
+## 版本v0.1
+
+更新日期: 2025-04-28
 
 - 加入导出SVG功能
 - 优化工具栏SVG代码格式
