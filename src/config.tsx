@@ -15,7 +15,7 @@ export const PERSONAL_LOGO_PATH = "/logo.svg";
 
 export const APP_NAME = "导向标志生成器";
 
-export const APP_VERSION  = `v0.3`;
+export const APP_VERSION  = `v0.4`;
 
 // 备案信息配置
 export const BEIAN_CONFIG = {
@@ -64,22 +64,33 @@ export const UPDATE_LOG = `
 
 更新日期: ${new Date().toLocaleDateString()}
 
+feat ✨：
+- 移动端适配
+`;
+
+export const UPDATE_LOG_PREVIOUS = `
+## 版本v0.3
+更新日期: 2025-04-29
+
 fix 🐛：
 - 修复导出 JPG 格式的问题
 - 优化 Canvas 组件
 - 改进 ContextMenu 组件显示逻辑
 
 feat ✨：
-- 增加画布配置导入导出功能
-- 新增自定义文本和颜色修改配置功能
-- 添加文本和颜色编辑对话框
 - 撤销、重做功能（支持快捷键 Ctrl+Z 和 Ctrl+Shift+Z）
 - 自动保存生成的自定义标志，关闭后重新打开时自动加载
 - 编辑标志自定义文本、颜色配置
 - 导入导出画布配置、包括自定义文本、颜色配置
-`;
 
-export const UPDATE_LOG_PREVIOUS = `
+## 版本v0.2
+更新日期: 2025-04-29
+
+feat ✨：
+- 增加画布配置导入导出功能
+- 新增自定义文本和颜色修改配置功能
+- 添加文本和颜色编辑对话框
+
 ## 版本v0.1
 
 更新日期: 2025-04-28
