@@ -33,7 +33,9 @@ export default function TextDialog({
   initialValues,
   initialColorBandColor
 }: TextDialogProps) {
-  const { fontBuffer, loading } = useFontLoader();
+  const { fontBuffer,
+    //  loading
+     } = useFontLoader();
   const {
     cnText,
     setCnText,
@@ -72,20 +74,20 @@ export default function TextDialog({
     }
   };
 
-  if (loading) {
-    return (
-      <Dialog open={true} onOpenChange={onClose}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>加载中...</DialogTitle>
-          </DialogHeader>
-          <DialogFooter>
-            <Button variant="ghost" onClick={onClose}>关闭</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    );
-  }
+  // if (loading) {
+  //   return (
+  //     <Dialog open={true} onOpenChange={onClose}>
+  //       <DialogContent className="sm:max-w-md">
+  //         <DialogHeader>
+  //           <DialogTitle>加载中...</DialogTitle>
+  //         </DialogHeader>
+  //         <DialogFooter>
+  //           <Button variant="ghost" onClick={onClose}>关闭</Button>
+  //         </DialogFooter>
+  //       </DialogContent>
+  //     </Dialog>
+  //   );
+  // }
   
   return (
     <Dialog open={true} onOpenChange={onClose}>
