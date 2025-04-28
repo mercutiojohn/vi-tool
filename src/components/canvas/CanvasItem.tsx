@@ -83,7 +83,7 @@ export default function CanvasItem({
       <img
         ref={imgRef}
         key={item.customUrl || item.file}
-        src={item.customUrl || `./${item.file}`}
+        src={item.customUrl || `/${item.file}`}
         alt={item.file}
         style={{ 
           height: `${imgSize.height}px`,
