@@ -92,7 +92,7 @@ export default function StepContextMenu({
             <Copy className="mr-2 h-4 w-4" />
             复制
           </ContextMenuItem>
-          <ContextMenuSeparator />
+          {(onEditText || onEditColor) && (<ContextMenuSeparator />)}
           {onEditText && (
             <ContextMenuItem onClick={onEditText}>
               <Type className="mr-2 h-4 w-4" />

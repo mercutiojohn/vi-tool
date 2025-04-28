@@ -52,7 +52,7 @@ export async function generateSubSVG(alignment: string, color: string): Promise<
     
     // 返回文件名和URL
     return {
-      fileName: `sub@custom-${Date.now()}.svg`,
+      fileName: svgFile,  // 保持与原始文件相同的文件名
       url
     };
   } catch (error) {
@@ -172,7 +172,7 @@ export async function generateColoredSVG(originFile: string, color: string): Pro
     
     // 返回文件名和URL
     return {
-      fileName: `${originFile.split('.')[0]}_${color.slice(1)}.svg`,
+      fileName: originFile,  // 保持原始文件名
       url
     };
   } catch (error) {
@@ -267,7 +267,7 @@ export async function generateTextSVG(
   });
   
   return {
-    fileName: `text@custom-${Date.now()}.svg`,
+    fileName: `text@${alignment}.svg`,  // 使用对齐方式作为文件名
     url
   };
 }
@@ -345,7 +345,7 @@ export async function generateTextSubSVG(
   const url = URL.createObjectURL(blob);
   
   return {
-    fileName: `sub@text-custom-${Date.now()}.svg`,
+    fileName: 'sub@text.svg',  // 使用固定的文本色带文件名
     url
   };
 }
