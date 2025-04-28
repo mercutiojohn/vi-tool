@@ -5,6 +5,12 @@ import { shouldReduceSpacing, isDotPair, isSubLinePair } from './spacingRules';
 const CANVAS_HEIGHT = 150;
 const DEFAULT_SPACING = 25;
 
+// 文件名格式常量
+const EXPORT_FILENAME = {
+  JPG: (date: string) => `导向标志_${date}.jpg`,
+  SVG: (date: string) => `导向标志_${date}.svg`
+};
+
 export async function exportAsJPG(items: SvgItem[]) {
   if (items.length === 0) {
     alert('画板中没有可导出的导向标志');
@@ -85,8 +91,8 @@ export async function exportAsJPG(items: SvgItem[]) {
   }
 
   // 生成下载
-  const url = tempCanvas.toDataURL('image/jpeg', 1.0); // 使用最高质量
-  downloadFile(url, '导向标志.jpg');
+  const url = tempCanvas.toDataURL('image/jpeg', 1.0);
+  downloadFile(url, EXPORT_FILENAME.JPG);
 }
 
 export async function exportAsSVG(items: SvgItem[], fontBuffer: ArrayBuffer) {
@@ -177,7 +183,7 @@ export async function exportAsSVG(items: SvgItem[], fontBuffer: ArrayBuffer) {
   const blob = new Blob([svgData], {type: 'image/svg+xml'});
   const url = URL.createObjectURL(blob);
   
-  downloadFile(url, `导向标志_${new Date().toISOString().slice(0,10)}.svg`);
+  downloadFile(url, EXPORT_FILENAME.SVG(new Date().toISOString().slice(0,10)));
   URL.revokeObjectURL(url);
 }
 
